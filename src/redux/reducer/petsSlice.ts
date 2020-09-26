@@ -23,6 +23,9 @@ const petsSlice = createSlice({
         addPets(state, action: PayloadAction<IPet>) {
             state.pets.push(action.payload);
         },
+        addArrayOfPets(state, action: PayloadAction<IPet[]>) {
+            state.pets.concat(action.payload);
+        },
         updatePet(state, action: PayloadAction<IPet>) {
             let edit = state.pets.find(item => item.id === action.payload.id && item.type === action.payload.type);
             if (edit) {
@@ -40,7 +43,7 @@ const petsSlice = createSlice({
     }
 });
 
-export const {updatePet, removePet, initPets, addPets} = petsSlice.actions;
+export const {updatePet, removePet, initPets, addPets ,addArrayOfPets} = petsSlice.actions;
 
 
 export default petsSlice.reducer;

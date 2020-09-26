@@ -50,7 +50,11 @@ const ListOfPets = () => {
         }
     }
 
-    return (<GetListOfPets farmId={+id} edit={false} clickRemoveOrFeed={feedPet} listOfPets={listOfPets}></GetListOfPets>);
+    return (<GetListOfPets
+        // farmId={+id}
+        edit={false}
+        clickRemoveOrFeed={feedPet}
+        listOfPets={listOfPets}></GetListOfPets>);
 }
 
 export default React.memo(ListOfPets);

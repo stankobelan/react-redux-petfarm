@@ -7,7 +7,7 @@ import React, {useEffect, useState} from "react";
 import {toBeautifulString} from "../../share/SharedServiceFunc";
 
 interface IGetListOfPetsProps {
-    farmId: number | null,
+    // farmId: number | null,
     edit: boolean,
     clickRemoveOrFeed: (index: number) => void,
     listOfPets :IPet[]

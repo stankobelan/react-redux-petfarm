@@ -35,13 +35,13 @@ const createFarmSlice = createSlice({
            switch (action.payload.type) {
                case PetType.CAT:
                {
-                   state.offerCats = state.offerCats.filter(x => x.id === action.payload.id);
+                   state.offerCats = state.offerCats.filter(x => x.id !== action.payload.id && x.type ===action.payload.type);
                    state.farmPets.push({...action.payload});
                }
                break;
                case PetType.DOG:
                {
-                   state.offerDogs = state.offerCats.filter(x => x.id === action.payload.id);
+                   state.offerDogs = state.offerDogs.filter(x => x.id !== action.payload.id && x.type ===action.payload.type);
                    state.farmPets.push({...action.payload});
                }
                break;
@@ -52,13 +52,13 @@ const createFarmSlice = createSlice({
             switch (action.payload.type) {
                 case PetType.CAT:
                 {
-                    state.farmPets = state.farmPets.filter(x => x.id === action.payload.id);
+                    state.farmPets = state.farmPets.filter(x => x.id !== action.payload.id && x.type ===action.payload.type);
                     state.offerCats.push({...action.payload});
                 }
                     break;
                 case PetType.DOG:
                 {
-                    state.farmPets = state.farmPets.filter(x => x.id === action.payload.id);
+                    state.farmPets = state.farmPets.filter(x => x.id !== action.payload.id && x.type ===action.payload.type);
                     state.offerDogs.push({...action.payload});
                 }
                     break;

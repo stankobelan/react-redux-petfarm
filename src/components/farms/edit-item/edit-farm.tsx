@@ -10,7 +10,7 @@ import EMW from "../../../hoc/EMW/EMW";
 import GetListOfPets from "../../pets/pets-list";
 import {IPet, PetType} from "../../../share/interfaces/IPet";
 import {Dog as DogClass} from "../../../share/models/Dog";
-import {removePet ,addPets} from "../../../redux/reducer/petsSlice";
+import {removePet, addPets} from "../../../redux/reducer/petsSlice";
 import {Cat as CatClass} from "../../../share/models/Cat";
 import {RootState} from "../../../redux/reducer/rootReducer";
 
@@ -83,9 +83,12 @@ const EditFarm = () => {
     const addCatToEditingFarmHandler = (index: number) => {
         let pet = {...availableListOfCats[index]};
         pet.petOwnerId = farmToEdit.id
-        axios.post<CatClass>(apiURL.CATS ,pet)
+        axios.post<CatClass[]>(apiURL.CATS, [pet])
             .then(response => {
-                    dispatch(addPets({...response.data, type:PetType.CAT }));
+                    response.data.map(item => {
+                        item.type = PetType.CAT;
+                        return item;
+                    }).forEach(e => dispatch(addPets(e)));
                 }
             )
     }
@@ -93,12 +96,16 @@ const EditFarm = () => {
     const addDogToEditingFarmHandler = (index: number) => {
         let pet = {...availableListOfDogs[index]};
         pet.petOwnerId = farmToEdit.id
-        axios.post<DogClass>(apiURL.DOGS ,pet)
+        axios.post<DogClass[]>(apiURL.DOGS, [pet])
             .then(response => {
-                    dispatch(addPets({...response.data, type:PetType.DOG }));
+                    response.data.map(item => {
+                        item.type = PetType.DOG;
+                        return item;
+                    }).forEach(e => dispatch(addPets(e)));
                 }
             )
     }
+
     return (
         <EMW>
             <FarmFormular
@@ -113,7 +120,7 @@ const EditFarm = () => {
                 setNewDogForFarm={addDogToEditingFarmHandler}
             />
             <GetListOfPets
-                farmId={farmToEdit.id}
+                // farmId={farmToEdit.id}
                 edit={true}
                 clickRemoveOrFeed={removePetHandler}
                 listOfPets={listOfPets}

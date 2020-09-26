@@ -8,15 +8,12 @@ import axios from '../../../axios-inst';
 import {apiURL} from '../../../share/ApiUrl';
 import FarmFormular from "./farm-form";
 import {RootState} from "../../../redux/reducer/rootReducer";
-import {Dog as DogClass, Dog} from "../../../share/models/Dog";
-import {Cat as CatClass, Cat} from "../../../share/models/Cat";
-import {
-    removePetFromFarm,
-    initFarms,
-    addPetToFarm,
-    clearNewFarm,
-    modifyNewFarm
-} from "../../../redux/reducer/createFarmSlice";
+import {Cat as CatClass} from "../../../share/models/Cat";
+import {Dog as DogClass} from "../../../share/models/Dog";
+import {addPetToFarm, initFarms, removePetFromFarm, clearNewFarm} from "../../../redux/reducer/createFarmSlice";
+import {addArrayOfPets} from "../../../redux/reducer/petsSlice";
+import GetListOfPets from "../../pets/pets-list";
+import EMW from "../../../hoc/EMW/EMW";
 
 
 const CreateFarm = () => {
@@ -28,6 +25,37 @@ const CreateFarm = () => {
         axios.post<IFarm>(apiURL.OWNERS, data)
             .then(response => {
                 dispatch(addFarm(response.data.id, response.data.name, response.data.address));
+                let cats = newPetsForFarm
+                    .filter(pet => pet.type === PetType.CAT)
+                    .map(pet => {
+                        let cat = {...pet} as CatClass;
+                        cat.petOwnerId = response.data.id;
+                        return cat;
+                    });
+
+                let dogs = newPetsForFarm
+                    .filter(pet => pet.type === PetType.DOG)
+                    .map(pet => {
+                        let dog = {...pet} as DogClass
+                        dog.petOwnerId = response.data.id;
+                        return dog;
+                    });
+
+                axios.post<CatClass[]>(apiURL.CATS, cats).then(responses => {
+                        console.dir(responses);
+                        let cats = responses.data;
+                        dispatch(addArrayOfPets(cats));
+                    }
+                );
+
+                axios.post<DogClass[]>(apiURL.DOGS, dogs).then(responses => {
+                        console.dir(responses);
+                        let dogs = responses.data;
+                        dispatch(addArrayOfPets(dogs));
+                    }
+                );
+
+                dispatch(clearNewFarm(data));
             })
         history.push("/");
     };
@@ -80,26 +108,34 @@ const CreateFarm = () => {
 
     const addCatToFarmHandler = (index: number) => {
         let pet = {...availableCats[index]};
-        dispatch(removePetFromFarm(pet));
+        dispatch(addPetToFarm(pet));
     }
 
     const addDogToFarmHandler = (index: number) => {
         let pet = {...availableDogs[index]};
-        dispatch(removePetFromFarm(pet));
+        dispatch(addPetToFarm(pet));
     }
 
     return (
-        <FarmFormular
-            address={address}
-            name={name}
-            onSubmit={onSubmit}
-            setAddress={setAddress}
-            setName={setName}
-            addNewCats={availableCats}
-            addNewDogs={availableDogs}
-            setNewCatForFarm={addCatToFarmHandler}
-            setNewDogForFarm={addDogToFarmHandler}
-        />
+        <EMW>
+            <FarmFormular
+                address={address}
+                name={name}
+                onSubmit={onSubmit}
+                setAddress={setAddress}
+                setName={setName}
+                addNewCats={availableCats}
+                addNewDogs={availableDogs}
+                setNewCatForFarm={addCatToFarmHandler}
+                setNewDogForFarm={addDogToFarmHandler}
+            />
+            <GetListOfPets
+                // farmId={farmToEdit.id}
+                edit={true}
+                clickRemoveOrFeed={removePetHandler}
+                listOfPets={currentPetsOnFarm}
+            />
+        </EMW>
     );
 }
 export default React.memo(CreateFarm);
