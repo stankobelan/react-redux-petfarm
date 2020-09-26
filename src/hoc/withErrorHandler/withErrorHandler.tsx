@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 
 import EMW from '../EMW/EMW';
 import {AxiosStatic} from "axios";
-import Modal from "../../components/ui/Modal/Modal";
+import Modal from "../../components/ui/modal/Modal";
 
 interface IStateError {
      error: {

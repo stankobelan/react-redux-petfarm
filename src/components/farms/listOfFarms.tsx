@@ -12,6 +12,7 @@ import {Cat as CatClass} from "../../share/models/Cat";
 import {PetType} from "../../share/interfaces/IPet";
 import {initPets} from "../../redux/reducer/petsSlice";
 import {Dog as DogClass} from "../../share/models/Dog";
+import cssFarm from './farm.module.scss';
 
 
 const ListOfFarms = (props: any) => {
@@ -84,10 +85,10 @@ const ListOfFarms = (props: any) => {
 
     return (
 
-        <>
+        <div className={cssFarm.container}>
             {farmsList}
 
-        </>
+        </div>
     );
 }
 

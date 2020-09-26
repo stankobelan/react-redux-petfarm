@@ -18,6 +18,7 @@
     "axios": "^0.20.0",
     "bootstrap": "^4.5.2",
     "immutable": "^4.0.0-rc.12",
+    "mdbreact": "^4.27.0",
     "memo": "^1.0.1",
     "node-sass": "^4.14.1",
     "prettier": "^2.1.2",

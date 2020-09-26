@@ -1,0 +1,22 @@
+.accordion {
+  margin: 1rem;
+  //max-block-size: 30rem;
+  //writing-mode: horizontal-tb;
+
+  //max-height: 20rem;
+
+  .card {
+    max-width: 1fr;
+    .card-header {
+      .collapse{
+
+      }
+      .collapse show {
+        .card-body {
+
+        }
+      }
+    }
+  }
+}
+
