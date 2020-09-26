@@ -3,6 +3,7 @@ import {AppDispatch, AppThunk} from '../data/store';
 import {IPet, PetType} from "../../share/interfaces/IPet";
 import {Cat} from "../../share/models/Cat";
 import {Dog} from "../../share/models/Dog";
+import {getRandomInt} from "../../share/SharedServiceFunc";
 
 
 export interface FarmSliceState {
@@ -39,30 +40,7 @@ const petsSlice = createSlice({
     }
 });
 
-export const {updatePet, removePet, initPets} = petsSlice.actions;
+export const {updatePet, removePet, initPets, addPets} = petsSlice.actions;
 
-
-export const addPets = (
-    id: number, datumNar: Date, feedingCount: number, petOwnerId: number, type: PetType
-): AppThunk => async (dispatch: AppDispatch) => {
-    let newPet;
-    if (type === PetType.CAT) {
-        newPet = new Cat();
-        newPet.id = id;
-        newPet.datumNarodenia = datumNar;
-        newPet.pocetKrmeni = feedingCount;
-        newPet.petOwnerId = petOwnerId;
-    }
-
-    if (type === PetType.DOG) {
-        newPet = new Dog();
-        newPet.id = id;
-        newPet.datumNarodenia = datumNar;
-        newPet.pocetKrmeni = feedingCount;
-        newPet.petOwnerId = petOwnerId;
-    }
-
-    dispatch(petsSlice.actions.addPets(newPet as IPet));
-}
 
 export default petsSlice.reducer;

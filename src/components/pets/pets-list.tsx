@@ -5,76 +5,24 @@ import {Cat as CatClass} from "../../share/models/Cat";
 import {Cat as CatComponent} from "./item/Cat";
 import React, {useEffect, useState} from "react";
 import {toBeautifulString} from "../../share/SharedServiceFunc";
-import {useDispatch, useSelector} from "react-redux";
-import {updatePet, removePet} from "redux/reducer/petsSlice";
-import axios from '../../axios-inst';
-import {apiURL} from '../../share/ApiUrl';
-import {RootState} from "../../redux/reducer/rootReducer";
 
 interface IGetListOfPetsProps {
     farmId: number | null,
-    edit: boolean
+    edit: boolean,
+    clickRemoveOrFeed: (index: number) => void,
+    listOfPets :IPet[]
 }
 
 const GetListOfPets = (props: IGetListOfPetsProps) => {
 
-    const pets = useSelector(
-        (state: RootState) => state.pets.pets
-    );
-    const [listOfPets, setlistOfPets] = useState<IPet[]>(pets.filter(x => x.petOwnerId === props.farmId));
-    const dispatch = useDispatch();
+    const [localListOfPets, setlistOfPets] = useState<IPet[]>(props.listOfPets);
 
     useEffect(() => {
-        console.log('useEffect GetListOfPets for props.listOfPets');
-        setlistOfPets(pets.filter(x => x.petOwnerId === props.farmId));
-    }, [pets, props.farmId]);
+        console.log('useEffect GetListOfPets');
+        setlistOfPets([...props.listOfPets]);
+    },[props.listOfPets] )
 
-    const feedPet = (index: number) => {
-        let pet = {...listOfPets[index]};
-        pet.pocetKrmeni += 1;
-        switch (pet.type) {
-            case PetType.DOG: {
-                axios.put<DogClass>(apiURL.DOGS + '/' + pet.id, pet)
-                    .then(response => {
-                            dispatch(updatePet(pet));
-                        }
-                    )
-            }
-                break;
-            case PetType.CAT: {
-                axios.put<CatClass>(apiURL.CATS + '/' + pet.id, pet)
-                    .then(response => {
-                            dispatch(updatePet(pet));
-                        }
-                    )
-            }
-                break;
-        }
-    }
-    const removePetHandler = (index: number) => {
-        let pet = {...listOfPets[index]};
-
-        switch (pet.type) {
-            case PetType.DOG: {
-                axios.delete<DogClass>(apiURL.DOGS + '/' + pet.id)
-                    .then(response => {
-                            dispatch(removePet(pet));
-                        }
-                    )
-            }
-                break;
-            case PetType.CAT: {
-                axios.delete<CatClass>(apiURL.CATS + '/' + pet.id)
-                    .then(response => {
-                            dispatch(removePet(pet));
-                        }
-                    )
-            }
-                break;
-        }
-    }
-
-    const list = listOfPets.map((pet, index) => {
+    const list = props.listOfPets.map((pet, index) => {
         switch (pet.type) {
             case PetType.CAT:
                 let cat = pet as CatClass;
@@ -85,9 +33,8 @@ const GetListOfPets = (props: IGetListOfPetsProps) => {
                                      pocetKrmeni={cat.pocetKrmeni}
                                      pocetMaciatok={cat.pocetMaciatok}
                                      edit={props.edit}
-                                     click={() => props.edit ? removePetHandler(index) : feedPet(index)}
+                                     click={() => props.clickRemoveOrFeed(index)}
                 />
-                break;
             case PetType.DOG:
                 let dog = pet as DogClass;
                 return <DogComponent key={index}
@@ -97,9 +44,8 @@ const GetListOfPets = (props: IGetListOfPetsProps) => {
                                      pocetKrmeni={dog.pocetKrmeni}
                                      pocetUhriznuti={dog.pocetUhriznuti}
                                      edit={props.edit}
-                                     click={() => props.edit ? removePetHandler(index) : feedPet(index)}
+                                     click={() => props.clickRemoveOrFeed(index)}
                 />
-                break;
             default:
                 return null;
         }

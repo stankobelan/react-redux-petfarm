@@ -1,8 +1,10 @@
 import {Form} from "react-bootstrap";
 import Button from "react-bootstrap/Button";
-import React from "react";
+import React, {useEffect, useState} from "react";
 import {useForm} from "react-hook-form";
 import {IPet} from "../../../share/interfaces/IPet";
+import {Cat} from "../../../share/models/Cat";
+import {Dog} from "../../../share/models/Dog";
 
 interface IFarmFormularProps {
     onSubmit:()=>void,
@@ -10,15 +12,32 @@ interface IFarmFormularProps {
     setName: React.Dispatch<React.SetStateAction<string>>,
     address:string,
     setAddress: React.Dispatch<React.SetStateAction<string>>,
-    listOfPets? : IPet[],
-    addNewDogs?: IPet[],
-    addNewCats?: IPet[],
-    setNewDogs?: React.Dispatch<React.SetStateAction<IPet[] | undefined>>,
-    setNewCats?: React.Dispatch<React.SetStateAction<IPet[] | undefined>>,
+    addNewDogs: IPet[],
+    addNewCats: IPet[],
+    setNewCatForFarm?: (index:number)=> void,
+    setNewDogForFarm?: (index:number)=> void
 }
 
 const FarmFormular = (props : IFarmFormularProps) => {
     const {handleSubmit, register, errors} = useForm();
+    const [availableDogs, setAvailableDogs] = useState<IPet[]>([]);
+    const [availableCats, setAvailableCats] = useState<IPet[]>([]);
+
+    const [selectedDogIndex, setAvailableDogIndex] = useState<number>(0);
+    const [selectedCatIndex, setAvailableCatIndex] = useState<number>(0);
+
+
+
+    useEffect(() => {
+        console.log('sync setAvailableCats');
+        setAvailableCats([...props.addNewCats]);
+    }, [props.addNewCats])
+
+    useEffect(() => {
+        console.log('sync setAvailableCats');
+        setAvailableDogs([...props.addNewDogs]);
+    }, [props.addNewDogs])
+
     return (
         <Form className="m-5" onSubmit={handleSubmit(props.onSubmit)}>
             <Form.Group>
@@ -64,15 +83,17 @@ const FarmFormular = (props : IFarmFormularProps) => {
                     as="select"
                     type="text"
                     name="chooseCat"
+                    onChange={(event) => setAvailableCatIndex(+(event.target.value))}
                 >
-                    <option label={"1"} value={"1"} >1</option>
-                    <option>2</option>
-                    <option>3</option>
-                    <option>4</option>
-                    <option>5</option>
+                    { availableCats.map( (cat:IPet, index:number) => {
+                       return <option key={cat.id} label={(cat as Cat).name??index.toString()} value={index} >1</option>
+                    })}
+
                 </Form.Control>
                 {errors.address && errors.address.message}
-                <Button className="float-right mt-1" variant="secondary"> Add Cat</Button>
+                <Button className="float-right mt-1" variant="secondary"
+                        onClick={() => {props.setNewCatForFarm?.(selectedCatIndex);}}
+                > Add Cat</Button>
             </Form.Group>
 
             <Form.Group>
@@ -80,16 +101,17 @@ const FarmFormular = (props : IFarmFormularProps) => {
                 <Form.Control
                     as="select"
                     type="text"
-                    name="chooseCat"
+                    name="chooseDog"
+                    onChange={(event) => setAvailableDogIndex(+(event.target.value))}
                 >
-                    <option>1</option>
-                    <option>2</option>
-                    <option>3</option>
-                    <option>4</option>
-                    <option>5</option>
+                    { availableDogs.map( (dog, index) => {
+                        return <option key={dog.id} label={(dog as Dog).name??index.toString()} value={index} >1</option>
+                    })}
                 </Form.Control>
                 {errors.address && errors.address.message}
-                <Button className="float-right mt-1" variant="secondary"> Add Cat</Button>
+                <Button className="float-right mt-1" variant="secondary"
+                        onClick={() => {props.setNewDogForFarm?.(selectedDogIndex);}}
+                > Add Cat</Button>
             </Form.Group>
 
             <Button className="mt-4" variant="primary" type="submit">

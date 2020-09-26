@@ -10,3 +10,7 @@ export const toBeautifulString = (date: Date): string => {
     }
     return [age.toString(), 'Year', Math.abs(months).toString(), 'Months', Math.abs(days).toString(), 'Days'].join(' ');
 };
+
+export const getRandomInt = (max:number) => {
+    return Math.floor(Math.random() * Math.floor(max));
+}
