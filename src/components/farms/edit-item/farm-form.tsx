@@ -2,13 +2,19 @@ import {Form} from "react-bootstrap";
 import Button from "react-bootstrap/Button";
 import React from "react";
 import {useForm} from "react-hook-form";
+import {IPet} from "../../../share/interfaces/IPet";
 
 interface IFarmFormularProps {
     onSubmit:()=>void,
     name: string,
     setName: React.Dispatch<React.SetStateAction<string>>,
     address:string,
-    setAddress: React.Dispatch<React.SetStateAction<string>>
+    setAddress: React.Dispatch<React.SetStateAction<string>>,
+    listOfPets? : IPet[],
+    addNewDogs?: IPet[],
+    addNewCats?: IPet[],
+    setNewDogs?: React.Dispatch<React.SetStateAction<IPet[] | undefined>>,
+    setNewCats?: React.Dispatch<React.SetStateAction<IPet[] | undefined>>,
 }
 
 const FarmFormular = (props : IFarmFormularProps) => {
@@ -59,7 +65,7 @@ const FarmFormular = (props : IFarmFormularProps) => {
                     type="text"
                     name="chooseCat"
                 >
-                    <option>1</option>
+                    <option label={"1"} value={"1"} >1</option>
                     <option>2</option>
                     <option>3</option>
                     <option>4</option>

@@ -11,25 +11,23 @@ import axios from '../../axios-inst';
 import {apiURL} from '../../share/ApiUrl';
 import {RootState} from "../../redux/reducer/rootReducer";
 
-
 interface IGetListOfPetsProps {
     farmId: number | null,
     edit: boolean
 }
-
 
 const GetListOfPets = (props: IGetListOfPetsProps) => {
 
     const pets = useSelector(
         (state: RootState) => state.pets.pets
     );
-    const [listOfPets, setlistOfPets] = useState<IPet[]>(pets.filter(x=> x.petOwnerId === props.farmId));
+    const [listOfPets, setlistOfPets] = useState<IPet[]>(pets.filter(x => x.petOwnerId === props.farmId));
     const dispatch = useDispatch();
 
     useEffect(() => {
         console.log('useEffect GetListOfPets for props.listOfPets');
-        setlistOfPets(pets.filter(x=> x.petOwnerId === props.farmId));
-    }, [pets]);
+        setlistOfPets(pets.filter(x => x.petOwnerId === props.farmId));
+    }, [pets, props.farmId]);
 
     const feedPet = (index: number) => {
         let pet = {...listOfPets[index]};
@@ -87,7 +85,7 @@ const GetListOfPets = (props: IGetListOfPetsProps) => {
                                      pocetKrmeni={cat.pocetKrmeni}
                                      pocetMaciatok={cat.pocetMaciatok}
                                      edit={props.edit}
-                                     click={() => feedPet(index)}
+                                     click={() => props.edit ? removePetHandler(index) : feedPet(index)}
                 />
                 break;
             case PetType.DOG:
@@ -99,7 +97,7 @@ const GetListOfPets = (props: IGetListOfPetsProps) => {
                                      pocetKrmeni={dog.pocetKrmeni}
                                      pocetUhriznuti={dog.pocetUhriznuti}
                                      edit={props.edit}
-                                     click={() => feedPet(index)}
+                                     click={() => props.edit ? removePetHandler(index) : feedPet(index)}
                 />
                 break;
             default:

@@ -31,7 +31,6 @@ const EditFarm = () => {
     };
     let location = useLocation<LocationState>();
     const {farmToEdit} = location.state;
-
     const [name, setName] = useState<string>(farmToEdit.name);
     const [address, setAddress] = useState<string>(farmToEdit.address);
 
