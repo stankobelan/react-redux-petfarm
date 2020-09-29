@@ -7,7 +7,6 @@ import React, {useEffect, useState} from "react";
 import {toBeautifulString} from "../../share/SharedServiceFunc";
 
 interface IGetListOfPetsProps {
-    // farmId: number | null,
     edit: boolean,
     clickRemoveOrFeed: (index: number) => void,
     listOfPets :IPet[]
@@ -22,7 +21,7 @@ const GetListOfPets = (props: IGetListOfPetsProps) => {
         setlistOfPets([...props.listOfPets]);
     },[props.listOfPets] )
 
-    const list = props.listOfPets.map((pet, index) => {
+    const list = localListOfPets.map((pet, index) => {
         switch (pet.type) {
             case PetType.CAT:
                 let cat = pet as CatClass;

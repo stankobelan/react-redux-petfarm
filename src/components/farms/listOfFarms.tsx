@@ -7,33 +7,36 @@ import {IFarm} from "../../share/interfaces/IFarm";
 import axios from '../../axios-inst';
 import {apiURL} from '../../share/ApiUrl';
 import {RootState} from '../../redux/reducer/rootReducer';
-import {initFarms, FarmSliceState} from "../../redux/reducer/farmSlice"
+import {initFarms} from "../../redux/reducer/farmSlice"
 import {Cat as CatClass} from "../../share/models/Cat";
-import {PetType} from "../../share/interfaces/IPet";
-import {initPets} from "../../redux/reducer/petsSlice";
+import { PetType} from "../../share/interfaces/IPet";
+import {IFarmEx} from "../../share/interfaces/IFarmCalculation"
+import {initPets, clearPets} from "../../redux/reducer/petsSlice";
 import {Dog as DogClass} from "../../share/models/Dog";
 import cssFarm from './farm.module.scss';
+import {initFarmCalc, clearCaclulation} from "redux/reducer/calcFarmSlice";
 
 
-const ListOfFarms = (props: any) => {
+const ListOfFarms = () => {
     const dispatch = useDispatch();
-    const farms = useSelector(
+
+    const redux_farms = useSelector(
         (state: RootState) => state.farms.farms
     );
-    const [listOfFarms, setListOfFarms] = useState<IFarm[]>(farms);
+
+    const redux_calcFarms = useSelector(
+        (state: RootState) => state.calcFarmSlice.calcFarms
+    );
+
+    const [extFarms, setextFarms] = useState<IFarmEx[]>([]);
+
 
     useEffect(() => {
         console.log('useEffect 1x ListOfFarms');
-        if (listOfFarms.length === 0) {
+        if (redux_farms.length === 0) {
             axios.get<IFarm[]>(apiURL.OWNERS)
                 .then(response => {
-                    console.dir(response);
-                    setListOfFarms([
-                            ...listOfFarms,
-                            ...response.data
-                        ]
-                    );
-                    console.dir(response.data.length);
+                    // send to redux and wait for calculation
                     dispatch(initFarms([...response.data]));
                 });
 
@@ -46,40 +49,56 @@ const ListOfFarms = (props: any) => {
                                 return cat;
                             }
                         );
+                        dispatch(clearPets());
+                        dispatch(clearCaclulation());
                         dispatch(initPets(cats));
-                    }
-                );
+                        dispatch(initFarmCalc(cats));
 
-            axios.get<DogClass[]>(apiURL.DOGS)
-                .then(response => {
-                        let dogs = response.data.map(
-                            (pet: DogClass) => {
-                                let dog = {...pet};
-                                dog.type = PetType.DOG
-                                return dog;
-                            }
-                        );
-                        dispatch(initPets(dogs));
+
+                        axios.get<DogClass[]>(apiURL.DOGS)
+                            .then(response => {
+                                    let dogs = response.data.map(
+                                        (pet: DogClass) => {
+                                            let dog = {...pet};
+                                            dog.type = PetType.DOG
+                                            return dog;
+                                        }
+                                    );
+                                    dispatch(initPets(dogs));
+                                    dispatch(initFarmCalc(dogs));
+                                }
+                            );
                     }
                 );
         }
     }, []);
 
     useEffect(() => {
-        console.log('useEffect for change farms');
-        setListOfFarms([...farms]);
-    }, [farms]);
+        console.log('useEffect for change => redux_calcFarms, redux_farms');
+        console.dir(redux_calcFarms);
+        console.dir(redux_farms);
 
-    const farmsList = listOfFarms.map((item, index) =>
+        if (redux_calcFarms.length > 0 && redux_farms.length > 0) {
+
+            let result = redux_farms.map(calc => {
+                let farm = redux_calcFarms.find(farm => calc.id === farm.Id)
+                return {...farm, ...calc} as IFarmEx;
+            })
+            console.dir(result);
+            setextFarms(result);
+        }
+    }, [redux_calcFarms, redux_farms]);
+
+    const farmsList = extFarms.map((item) =>
         <Farm
             key={item.id}
             id={item.id}
             name={item.name}
             address={item.address}
-            getAverageDogsAge={() => ''}
-            getAverageCatsAge={() => ''}
-            pocetCats={() => 0}
-            pocetDogs={() => 0}
+            averageDogsAge={(item.SumOfDogsAge / item.CountOfDogs).toFixed(2)}
+            averageCatsAge={(item.SumOfCatsAge / item.CountOfCats).toFixed(2)}
+            sumOfCats={item.CountOfCats}
+            sumOfDogs={item.CountOfDogs}
         >
         </Farm>);
 

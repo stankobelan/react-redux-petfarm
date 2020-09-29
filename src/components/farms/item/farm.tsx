@@ -2,10 +2,8 @@ import React from 'react';
 import {Link} from "react-router-dom";
 import cssclass from '../farm.module.scss';
 import {ReactComponent as FarmLogo} from '../../../assets/farmer.svg';
-import {useAccordionToggle} from 'react-bootstrap/AccordionToggle';
 import Accordion from "react-bootstrap/cjs/Accordion";
 import Card from "react-bootstrap/cjs/Card";
-import cssAccordion from './accordion.module.scss';
 
 
 export interface FarmProps {
@@ -13,10 +11,10 @@ export interface FarmProps {
     address: string | null,
     name: string | null,
     children: any[],
-    getAverageDogsAge: () => string,
-    getAverageCatsAge: () => string,
-    pocetCats: () => number,
-    pocetDogs: () => number
+    averageDogsAge: string,
+    averageCatsAge: string,
+    sumOfCats: number,
+    sumOfDogs: number
 }
 
 const Farm = (props: FarmProps) => {
@@ -34,18 +32,18 @@ const Farm = (props: FarmProps) => {
                     <Accordion.Collapse eventKey="1">
                         <Card.Body>
                         <div className={cssclass.card__address}>
-                            {props.getAverageDogsAge()} Priemerny vek psov
+                            {props.averageDogsAge} Priemerny vek psov
                         </div>
 
                         <div className={cssclass.card__address}>
-                            {props.getAverageCatsAge()} Priemerny vek maciek
+                            {props.averageCatsAge} Priemerny vek maciek
                         </div>
                         <div className={cssclass.grid__container}>
                             <div className="grid-child-followers">
-                                {props.pocetCats()} Pocet maciek
+                                {props.sumOfCats} Pocet maciek
                             </div>
                             <div className="grid-child-followers">
-                                {props.pocetDogs()} Pocet psov
+                                {props.sumOfDogs} Pocet psov
                             </div>
 
                         </div>

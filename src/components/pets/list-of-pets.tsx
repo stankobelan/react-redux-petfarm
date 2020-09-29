@@ -6,9 +6,10 @@ import {useDispatch, useSelector} from "react-redux";
 import {RootState} from "../../redux/reducer/rootReducer";
 import {IPet, PetType} from "../../share/interfaces/IPet";
 import {Cat as CatClass} from "../../share/models/Cat";
-import {initPets, updatePet} from "redux/reducer/petsSlice";
+import {updatePet} from "redux/reducer/petsSlice";
 import {Dog as DogClass} from "../../share/models/Dog";
 import GetListOfPets from "./pets-list";
+
 
 interface queryUrlParams {
     id: string;
@@ -25,7 +26,7 @@ const ListOfPets = () => {
     useEffect(() => {
         console.log("useEffect ListOfPets ");
         setListOfPets([...pets.filter(item => item.petOwnerId === (+id))]);
-    }, [ pets]);
+    }, [ pets,id]);
 
     const feedPet = (index: number) => {
         let pet = {...listOfPets[index]};
@@ -33,7 +34,7 @@ const ListOfPets = () => {
         switch (pet.type) {
             case PetType.DOG: {
                 axios.put<DogClass>(apiURL.DOGS + '/' + pet.id, pet)
-                    .then(response => {
+                    .then(() => {
                             dispatch(updatePet(pet));
                         }
                     )
@@ -41,7 +42,7 @@ const ListOfPets = () => {
                 break;
             case PetType.CAT: {
                 axios.put<CatClass>(apiURL.CATS + '/' + pet.id, pet)
-                    .then(response => {
+                    .then(() => {
                             dispatch(updatePet(pet));
                         }
                     )
@@ -51,10 +52,10 @@ const ListOfPets = () => {
     }
 
     return (<GetListOfPets
-        // farmId={+id}
-        edit={false}
-        clickRemoveOrFeed={feedPet}
-        listOfPets={listOfPets}></GetListOfPets>);
+    // farmId={+id}
+    edit={false}
+    clickRemoveOrFeed={feedPet}
+    listOfPets={listOfPets}/>);
 }
 
 export default React.memo(ListOfPets);

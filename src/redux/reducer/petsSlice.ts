@@ -1,9 +1,5 @@
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
-import {AppDispatch, AppThunk} from '../data/store';
-import {IPet, PetType} from "../../share/interfaces/IPet";
-import {Cat} from "../../share/models/Cat";
-import {Dog} from "../../share/models/Dog";
-import {getRandomInt} from "../../share/SharedServiceFunc";
+import {IPet} from "../../share/interfaces/IPet";
 
 
 export interface FarmSliceState {
@@ -39,11 +35,14 @@ const petsSlice = createSlice({
             if (state.pets.length === 0)
                 state.pets = action.payload;
             else state.pets.push(...action.payload);
+        },
+        clearPets(state) {
+            state.pets = [];
         }
     }
 });
 
-export const {updatePet, removePet, initPets, addPets ,addArrayOfPets} = petsSlice.actions;
+export const {updatePet, removePet, initPets, addPets ,addArrayOfPets,clearPets} = petsSlice.actions;
 
 
 export default petsSlice.reducer;

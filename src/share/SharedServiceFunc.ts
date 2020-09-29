@@ -14,3 +14,14 @@ export const toBeautifulString = (date: Date): string => {
 export const getRandomInt = (max:number) => {
     return Math.floor(Math.random() * Math.floor(max));
 }
+
+export const toAge = (date :Date)  => {
+    let today = new Date();
+    let birthDate = new Date(date);
+    let age = today.getFullYear() - birthDate.getFullYear();
+    let months = today.getMonth() - birthDate.getMonth();
+    if (months < 0 || (months === 0 && today.getDate() < birthDate.getDate())) {
+        age--;
+    }
+    return age;
+};

@@ -34,7 +34,7 @@ const FarmFormular = (props : IFarmFormularProps) => {
     }, [props.addNewCats])
 
     useEffect(() => {
-        console.log('sync setAvailableCats');
+        console.log('sync setAvailableDogs');
         setAvailableDogs([...props.addNewDogs]);
     }, [props.addNewDogs])
 

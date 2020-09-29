@@ -13,6 +13,7 @@ import {Dog as DogClass} from "../../../share/models/Dog";
 import {removePet, addPets} from "../../../redux/reducer/petsSlice";
 import {Cat as CatClass} from "../../../share/models/Cat";
 import {RootState} from "../../../redux/reducer/rootReducer";
+import {addPetToCaclulation, removePetToCaclulation} from "redux/reducer/calcFarmSlice";
 
 interface LocationState {
     farmToEdit: {
@@ -29,7 +30,7 @@ const EditFarm = () => {
         console.log()
         const data = {id: farmToEdit.id, name: name, address: address};
         axios.put<IFarm>(apiURL.OWNERS + '/' + farmToEdit.id, data)
-            .then(response => {
+            .then(() => {
                 dispatch(editFarm(data as IFarm));
             })
         history.push("/");
@@ -55,7 +56,7 @@ const EditFarm = () => {
         setAvailableListOfDogs([...pets.filter(item =>
             item.petOwnerId !== (farmToEdit.id) &&
             item.type === PetType.DOG)]);
-    }, [pets]);
+    }, [pets, farmToEdit.id]);
 
     const removePetHandler = (index: number) => {
         let pet = {...listOfPets[index]};
@@ -63,16 +64,18 @@ const EditFarm = () => {
         switch (pet.type) {
             case PetType.DOG: {
                 axios.delete<DogClass>(apiURL.DOGS + '/' + pet.id)
-                    .then(response => {
+                    .then(() => {
                             dispatch(removePet(pet));
+                            dispatch(removePetToCaclulation(pet));
                         }
                     )
             }
                 break;
             case PetType.CAT: {
                 axios.delete<CatClass>(apiURL.CATS + '/' + pet.id)
-                    .then(response => {
+                    .then(() => {
                             dispatch(removePet(pet));
+                            dispatch(removePetToCaclulation(pet));
                         }
                     )
             }
@@ -88,7 +91,10 @@ const EditFarm = () => {
                     response.data.map(item => {
                         item.type = PetType.CAT;
                         return item;
-                    }).forEach(e => dispatch(addPets(e)));
+                    }).forEach(e => {
+                        dispatch(addPets(e));
+                        dispatch(addPetToCaclulation(e));
+                    });
                 }
             )
     }
@@ -101,7 +107,10 @@ const EditFarm = () => {
                     response.data.map(item => {
                         item.type = PetType.DOG;
                         return item;
-                    }).forEach(e => dispatch(addPets(e)));
+                    }).forEach(e => {
+                        dispatch(addPets(e))
+                        dispatch(addPetToCaclulation(e))
+                    });
                 }
             )
     }

@@ -55,7 +55,7 @@ const CreateFarm = () => {
                     }
                 );
 
-                dispatch(clearNewFarm(data));
+                dispatch(clearNewFarm());
             })
         history.push("/");
     };

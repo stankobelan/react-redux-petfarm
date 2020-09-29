@@ -1,11 +1,10 @@
 import React, {Component} from "react";
 import {
-    MDBNavbar, MDBNavbarBrand, MDBNavbarNav, MDBNavItem, MDBNavLink, MDBNavbarToggler, MDBCollapse, MDBDropdown,
-    MDBDropdownToggle, MDBDropdownMenu, MDBDropdownItem, MDBIcon
+    MDBNavbar, MDBNavbarBrand, MDBNavbarNav, MDBNavItem, MDBNavLink, MDBNavbarToggler, MDBCollapse
 } from "mdbreact";
 import {
     Switch,
-    Route, BrowserRouter as Router, Link
+    Route, BrowserRouter as Router
 } from 'react-router-dom';
 
 import EMW from '../../../hoc/EMW/EMW'
@@ -14,7 +13,6 @@ import EditFarm from "../../../components/farms/edit-item/edit-farm";
 import CreateFarm from "../../../components/farms/edit-item/create-farm";
 import ListOfPets from "../../../components/pets/list-of-pets";
 import About from "../../../components/ui/About/About";
-import FooterPage from "../footer/footer";
 
 
 class NavbarPage extends Component {
@@ -54,7 +52,7 @@ class NavbarPage extends Component {
                         <Route path="/" exact render={() => <EMW> <ListOfFarms/> </EMW>}/>
                         <Route path="/about"
                                exact
-                               render={() => <About></About>}/>
+                               render={() => <About/>}/>
                         <Route
                             path="/contact"
                             exact
@@ -62,16 +60,16 @@ class NavbarPage extends Component {
                         <Route
                             path="/edit-farm/:id"
                             exact
-                            render={() => <EditFarm></EditFarm>}/>
+                            render={() => <EditFarm/>}/>
                         <Route
                             path="/create-farm"
                             exact
-                            render={() => <CreateFarm></CreateFarm>}/>
+                            render={() => <CreateFarm/>}/>
 
                         <Route
                             path="/farm-pets/:id"
                             exact
-                            render={() => <ListOfPets></ListOfPets>}/>
+                            render={() => <ListOfPets/>}/>
                         <Route render={() => <h1>Page not found</h1>}/>
                     </Switch>
 
