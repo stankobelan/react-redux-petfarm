@@ -5,6 +5,7 @@ import {Cat as CatClass} from "../../share/models/Cat";
 import {Cat as CatComponent} from "./item/Cat";
 import React, {useEffect, useState} from "react";
 import {toBeautifulString} from "../../share/SharedServiceFunc";
+import cssClass from "./item/pet.module.scss"
 
 interface IGetListOfPetsProps {
     edit: boolean,
@@ -51,6 +52,6 @@ const GetListOfPets = (props: IGetListOfPetsProps) => {
 
     });
 
-    return <> {list} </>
+    return <div className={cssClass.container}> {list} </div>
 }
 export default React.memo(GetListOfPets);

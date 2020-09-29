@@ -20,7 +20,7 @@ const petsSlice = createSlice({
             state.pets.push(action.payload);
         },
         addArrayOfPets(state, action: PayloadAction<IPet[]>) {
-            state.pets.concat(action.payload);
+            state.pets = state.pets.concat(action.payload);
         },
         updatePet(state, action: PayloadAction<IPet>) {
             let edit = state.pets.find(item => item.id === action.payload.id && item.type === action.payload.type);

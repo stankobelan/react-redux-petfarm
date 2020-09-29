@@ -10,7 +10,8 @@ import FarmFormular from "./farm-form";
 import {RootState} from "../../../redux/reducer/rootReducer";
 import {Cat as CatClass} from "../../../share/models/Cat";
 import {Dog as DogClass} from "../../../share/models/Dog";
-import {addPetToFarm, initFarms, removePetFromFarm, clearNewFarm} from "../../../redux/reducer/createFarmSlice";
+import {addPetToFarm, clearNewFarm, initFarms, removePetFromFarm} from "../../../redux/reducer/createFarmSlice";
+import {addNewFarmToCalc, addPetsToNewFarmForCalc} from "../../../redux/reducer/calcFarmSlice";
 import {addArrayOfPets} from "../../../redux/reducer/petsSlice";
 import GetListOfPets from "../../pets/pets-list";
 import EMW from "../../../hoc/EMW/EMW";
@@ -25,6 +26,7 @@ const CreateFarm = () => {
         axios.post<IFarm>(apiURL.OWNERS, data)
             .then(response => {
                 dispatch(addFarm(response.data.id, response.data.name, response.data.address));
+                dispatch(addNewFarmToCalc(response.data));
                 let cats = newPetsForFarm
                     .filter(pet => pet.type === PetType.CAT)
                     .map(pet => {
@@ -42,16 +44,28 @@ const CreateFarm = () => {
                     });
 
                 axios.post<CatClass[]>(apiURL.CATS, cats).then(responses => {
-                        console.dir(responses);
-                        let cats = responses.data;
-                        dispatch(addArrayOfPets(cats));
+                        let lCats = responses.data
+                            .map(pet => {
+                                let cat = {...pet} as CatClass;
+                                cat.type = PetType.CAT;
+                                return cat;
+                            });
+
+                        dispatch(addArrayOfPets(lCats));
+                        dispatch(addPetsToNewFarmForCalc(lCats));
                     }
                 );
 
                 axios.post<DogClass[]>(apiURL.DOGS, dogs).then(responses => {
-                        console.dir(responses);
-                        let dogs = responses.data;
-                        dispatch(addArrayOfPets(dogs));
+
+                        let lDogs = responses.data
+                            .map(pet => {
+                                let cat = {...pet} as DogClass;
+                                cat.type = PetType.DOG;
+                                return cat;
+                            });
+                        dispatch(addArrayOfPets(lDogs));
+                        dispatch(addPetsToNewFarmForCalc(lDogs));
                     }
                 );
 

@@ -65,7 +65,10 @@ const createFarmSlice = createSlice({
         },
 
         clearNewFarm(state) {
-            state = initialState;
+            state.farm = {...cleanFarm};
+            state.offerDogs = [];
+            state.offerCats = [];
+            state.farmPets = [];
         },
 
         initFarms(state, action: PayloadAction<IPet[]>){

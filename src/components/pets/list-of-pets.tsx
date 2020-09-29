@@ -20,11 +20,14 @@ const ListOfPets = () => {
     const pets = useSelector(
         (state: RootState) => state.pets.pets
     );
-    const [listOfPets, setListOfPets] = useState<IPet[]>(pets);
+    const [listOfPets, setListOfPets] = useState<IPet[]>([]);
     let {id} = useParams<queryUrlParams>();
 
     useEffect(() => {
         console.log("useEffect ListOfPets ");
+        console.dir(pets);
+        console.dir(+id);
+        console.dir([...pets.filter(item => item.petOwnerId === (+id))]);
         setListOfPets([...pets.filter(item => item.petOwnerId === (+id))]);
     }, [ pets,id]);
 

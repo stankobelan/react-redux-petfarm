@@ -26,15 +26,7 @@ interface LocationState {
 const EditFarm = () => {
     const dispatch = useDispatch();
     let history = useHistory();
-    const onSubmit = () => {
-        console.log()
-        const data = {id: farmToEdit.id, name: name, address: address};
-        axios.put<IFarm>(apiURL.OWNERS + '/' + farmToEdit.id, data)
-            .then(() => {
-                dispatch(editFarm(data as IFarm));
-            })
-        history.push("/");
-    };
+
     let location = useLocation<LocationState>();
     const {farmToEdit} = location.state;
     const [name, setName] = useState<string>(farmToEdit.name);
@@ -43,6 +35,17 @@ const EditFarm = () => {
     const pets = useSelector(
         (state: RootState) => state.pets.pets
     );
+    const currentPetsOnFarm = useSelector(
+        (state: RootState) => state.createFarmSlice.farmPets
+    );
+    const availableCatsForFarm = useSelector(
+        (state: RootState) => state.createFarmSlice.offerCats
+    );
+    const availableDogsForFarm = useSelector(
+        (state: RootState) => state.createFarmSlice.offerDogs
+    );
+
+
     const [listOfPets, setlistOfPets] = useState<IPet[]>([]);
     const [availableListOfCats, setAvailableListOfCats] = useState<IPet[]>([]);
     const [availableListOfDogs, setAvailableListOfDogs] = useState<IPet[]>([]);
@@ -114,6 +117,16 @@ const EditFarm = () => {
                 }
             )
     }
+
+    const onSubmit = () => {
+        console.log()
+        const data = {id: farmToEdit.id, name: name, address: address};
+        axios.put<IFarm>(apiURL.OWNERS + '/' + farmToEdit.id, data)
+            .then(() => {
+                dispatch(editFarm(data as IFarm));
+            })
+        history.push("/");
+    };
 
     return (
         <EMW>
