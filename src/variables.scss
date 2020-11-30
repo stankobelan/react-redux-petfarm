@@ -1,0 +1,88 @@
+//reference to palette: https://flatuicolors.com/palette/cn
+
+$colors: (
+        'success': #0fff00,
+        'failure': #ff2102,
+        'alert': #ffa400,
+        'primary': #0d7bcf,
+        'primary-disabled': #61676b,
+        'secondary': #f3c700,
+        'secondary-disabled': #d3c16f,
+        'secondary-alt': #ffffff,
+        'header': #222222,
+);
+
+/*#1D86B3, #0066b5*/
+
+@function color($key: 'primary') {
+  @if map-has-key($colors, $key) {
+    $key: map-get($colors, $key);
+  }
+  @return $key;
+}
+
+@function color-transparency($name: 'primary', $opacity: 0) {
+  $color: color($name);
+
+  // Get the named opacity level, if it exists
+  @if map-has-key($opacity-map, $opacity) {
+    $opacity: map-get($opacity-map, $opacity);
+  }
+
+  // Use rgba() to manipulate the color's alpha level
+  @return rgba($color, $opacity);
+}
+
+@function color-lighter($name: 'primary', $light: 0) {
+  $color: color($name);
+
+  // Get the named opacity level, if it exists
+  @if map-has-key($light-map, $light) {
+    $light: map-get($light-map, $light);
+  }
+
+  @return lighten($color, $light);
+}
+
+@function color-darker($name: 'primary', $light: 0) {
+  $color: color($name);
+
+  // Get the named opacity level, if it exists
+  @if map-has-key($light-map, $light) {
+    $light: map-get($light-map, $light);
+  }
+
+  @return darken($color, $light);
+}
+
+$light-map: (
+        'level_8': 55,
+        'level_7': 45,
+        'level_6': 35,
+        'level_5': 25,
+        'level_4': 20,
+        'level_3': 15,
+        'level_2': 10,
+        'level_1': 5,
+        'level_0': 3
+);
+
+$opacity-map: (
+        'ultra-light': 0.1,
+        'light': 0.3,
+        'medium': 0.5,
+        'dark': 0.7,
+        'ultra-dark': 0.9
+);
+
+
+/*
+// Example usage:
+$button-transparent-color: color-alpha('primary', 'light');
+// => rgba(#8e3329, 0.8)
+
+// Example:
+* {
+  background-color: color-level('primary', 2);
+}
+*/

@@ -23,7 +23,7 @@ export const Dog = (props: IDogProps) => {
             typ='dog'
             name={props.name}
         >
-            <Logo className={cssClasses.card__image}></Logo>
+            <Logo className={cssClasses.card__image}/>
             <span> PocetUhriznuti : {props.pocetUhriznuti}</span>
         </Pet>
     );

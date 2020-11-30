@@ -105,12 +105,12 @@ const CreateFarm = () => {
     }, [currentPetsOnFarm])
 
     useEffect(() => {
-        console.log('sync newPetsForFarm');
+        console.log('sync avaliableCatsForFarm');
         setAvailableCats([...availableCatsForFarm]);
     }, [availableCatsForFarm])
 
     useEffect(() => {
-        console.log('init for form');
+        console.log('sync avaliableDogsForFarm');
         setAvailableDogs([...availableDogsForFarm]);
     }, [availableDogsForFarm])
 

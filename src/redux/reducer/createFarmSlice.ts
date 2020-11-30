@@ -80,6 +80,6 @@ const createFarmSlice = createSlice({
     }
 });
 
-export const {initFarms, addPetToFarm, clearNewFarm, modifyNewFarm, removePetFromFarm} = createFarmSlice.actions;
+export const {initFarms, addPetToFarm, clearNewFarm, removePetFromFarm} = createFarmSlice.actions;
 
 export default createFarmSlice.reducer;

@@ -86,7 +86,7 @@ const FarmFormular = (props : IFarmFormularProps) => {
                     onChange={(event) => setAvailableCatIndex(+(event.target.value))}
                 >
                     { availableCats.map( (cat:IPet, index:number) => {
-                       return <option key={index} label={(cat as Cat).name??index.toString()} value={index} ></option>
+                       return <option key={index} label={(cat as Cat).name ?? index.toString()} value={index} />
                     })}
 
                 </Form.Control>
@@ -105,7 +105,7 @@ const FarmFormular = (props : IFarmFormularProps) => {
                     onChange={(event) => setAvailableDogIndex(+(event.target.value))}
                 >
                     { availableDogs.map( (dog, index) => {
-                        return <option key={index} label={(dog as Dog).name??index.toString()} value={index} ></option>
+                        return <option key={index} label={(dog as Dog).name ?? index.toString()} value={index} />
                     })}
                 </Form.Control>
                 {errors.address && errors.address.message}

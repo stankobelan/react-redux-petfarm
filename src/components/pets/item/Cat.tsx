@@ -24,7 +24,7 @@ export const Cat = (props: ICatProps) => {
             typ='cat'
             name={props.name}
         >
-            <CatLogo className={cssClasses.card__image}></CatLogo>
+            <CatLogo className={cssClasses.card__image}/>
             <span> Pocet maciatok : {props.pocetMaciatok}</span>
         </Pet>
     );

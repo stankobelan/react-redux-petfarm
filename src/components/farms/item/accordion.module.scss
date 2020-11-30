@@ -1,3 +1,5 @@
+@import "./src/variables";
+
 .accordion {
   margin: 1rem;
   //max-block-size: 30rem;
@@ -9,7 +11,7 @@
     max-width: 1fr;
     .card-header {
       .collapse{
-
+        background: color-transparency('secondary-alt', 'dark');
       }
       .collapse show {
         .card-body {

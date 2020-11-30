@@ -36,7 +36,7 @@ const farmSlice = createSlice({
     }
 });
 
-export const {editFarm, removeFarm , initFarms} = farmSlice.actions;
+export const {editFarm, initFarms} = farmSlice.actions;
 
 
 export const addFarm = (

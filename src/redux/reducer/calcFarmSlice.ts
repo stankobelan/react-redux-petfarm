@@ -20,6 +20,21 @@ function createEmtyFarmCalc(id: number) {
 
 const groupByOwner = groupBy('petOwnerId')
 
+function countCatsAndDogs(action: PayloadAction<IPet>, farmCal:IFarmCalculation, pet: IPet) {
+    switch (action.payload.type) {
+        case PetType.DOG: {
+            farmCal.CountOfDogs += 1;
+            farmCal.SumOfDogsAge += toAge(pet.datumNarodenia);
+        }
+            break;
+        case PetType.CAT: {
+            farmCal.CountOfCats += 1;
+            farmCal.SumOfCatsAge += toAge(pet.datumNarodenia);
+        }
+            break;
+    }
+}
+
 const calcFarmSlice = createSlice({
     name: 'calcFarmSlice',
     initialState,
@@ -62,21 +77,11 @@ const calcFarmSlice = createSlice({
             let farmCal = state.calcFarms.find((record: IFarmCalculation) => record.Id === pet.petOwnerId);
             if (!farmCal) {
                 farmCal = createEmtyFarmCalc(pet.petOwnerId ?? 0);
+                countCatsAndDogs(action, farmCal, pet);
+                state.calcFarms.push(farmCal);
+            } else {
+                countCatsAndDogs(action, farmCal, pet);
             }
-
-            switch (action.payload.type) {
-                case PetType.DOG: {
-                    farmCal.CountOfDogs += 1;
-                    farmCal.SumOfDogsAge += toAge(pet.datumNarodenia);
-                }
-                    break;
-                case PetType.CAT: {
-                    farmCal.CountOfCats += 1;
-                    farmCal.SumOfCatsAge += toAge(pet.datumNarodenia);
-                }
-                    break;
-            }
-
         },
 
         removePetToCaclulation(state, action: PayloadAction<IPet>) {

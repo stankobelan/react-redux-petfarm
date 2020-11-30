@@ -1,5 +1,6 @@
 export  const apiURL = {
     OWNERS: '/petowners',
     DOGS: '/dogs',
-    CATS: '/cats'
+    CATS: '/cats',
+    CONTACT:'/contacts'
 }

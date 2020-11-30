@@ -4,7 +4,7 @@ import cssclass from '../farm.module.scss';
 import {ReactComponent as FarmLogo} from '../../../assets/farmer.svg';
 import Accordion from "react-bootstrap/cjs/Accordion";
 import Card from "react-bootstrap/cjs/Card";
-
+import  './farm.scss';
 
 export interface FarmProps {
     id: number | null,
@@ -25,7 +25,7 @@ const Farm = (props: FarmProps) => {
             <Card>
                 <div key={props.id} className={[cssclass.card__farm].join(' ')}>
                     <Accordion.Toggle as={Card.Header} eventKey="1">
-                        <FarmLogo className={cssclass.card__image__scaleA}></FarmLogo>
+                        <FarmLogo className={cssclass.card__image__scaleA}/>
                         <p className={cssclass.card__name}>{props.name}</p>
                         <p className={cssclass.card__address}>{props.address}</p>
                     </Accordion.Toggle>

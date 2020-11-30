@@ -3,7 +3,7 @@ import React from "react";
 const About = (props: any) => {
 
     return (<div className="container">
-        <p>
+
             Pes a mačka
             <ul>
                 <li> Na serveri vytvorit C# model pre psa, mačku a majitela, ktory vlastni psy a macky. Pes a
@@ -35,7 +35,7 @@ const About = (props: any) => {
                     do DB a zisti ci robit edit alebo insert) alebo mozu byt kludne aj dve osobitne.
                 </li>
             </ul>
-        </p>
+
     </div>);
 }
 export default About;

@@ -13,6 +13,7 @@ import EditFarm from "../../../components/farms/edit-item/edit-farm";
 import CreateFarm from "../../../components/farms/edit-item/create-farm";
 import ListOfPets from "../../../components/pets/list-of-pets";
 import About from "../../../components/ui/About/About";
+import ContactFormular from "../contact/contact";
 
 
 class NavbarPage extends Component {
@@ -44,6 +45,9 @@ class NavbarPage extends Component {
                                 <MDBNavItem>
                                     <MDBNavLink to="/about">About</MDBNavLink>
                                 </MDBNavItem>
+                                <MDBNavItem>
+                                    <MDBNavLink to="/contact">Contact me</MDBNavLink>
+                                </MDBNavItem>
                             </MDBNavbarNav>
                         </MDBCollapse>
                     </MDBNavbar>
@@ -56,7 +60,7 @@ class NavbarPage extends Component {
                         <Route
                             path="/contact"
                             exact
-                            render={() => <h1>Contact Us</h1>}/>
+                            render={() => <ContactFormular/>}/>
                         <Route
                             path="/edit-farm/:id"
                             exact
@@ -70,7 +74,11 @@ class NavbarPage extends Component {
                             path="/farm-pets/:id"
                             exact
                             render={() => <ListOfPets/>}/>
+
+
                         <Route render={() => <h1>Page not found</h1>}/>
+
+
                     </Switch>
 
                 </Router>

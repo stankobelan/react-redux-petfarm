@@ -15,6 +15,7 @@ import {initPets, clearPets} from "../../redux/reducer/petsSlice";
 import {Dog as DogClass} from "../../share/models/Dog";
 import cssFarm from './farm.module.scss';
 import {initFarmCalc, clearCaclulation} from "redux/reducer/calcFarmSlice";
+import { clearNewFarm } from "redux/reducer/createFarmSlice";
 
 
 const ListOfFarms = () => {
@@ -33,6 +34,7 @@ const ListOfFarms = () => {
 
     useEffect(() => {
         console.log('useEffect 1x ListOfFarms');
+        dispatch(clearNewFarm());
         if (redux_farms.length === 0) {
             axios.get<IFarm[]>(apiURL.OWNERS)
                 .then(response => {
@@ -53,7 +55,6 @@ const ListOfFarms = () => {
                         dispatch(clearCaclulation());
                         dispatch(initPets(cats));
                         dispatch(initFarmCalc(cats));
-
 
                         axios.get<DogClass[]>(apiURL.DOGS)
                             .then(response => {
