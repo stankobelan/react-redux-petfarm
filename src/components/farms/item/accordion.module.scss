@@ -1,4 +1,4 @@
-@import "./src/variables";
+@import './src/variables';
 
 .accordion {
   margin: 1rem;
@@ -10,15 +10,13 @@
   .card {
     max-width: 1fr;
     .card-header {
-      .collapse{
+      .collapse {
         background: color-transparency('secondary-alt', 'dark');
       }
       .collapse show {
         .card-body {
-
         }
       }
     }
   }
 }
-

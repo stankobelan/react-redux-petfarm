@@ -1,115 +1,180 @@
-import React, {useEffect, useState} from "react";
-import {useDispatch, useSelector} from "react-redux"
-
-
-import Farm from "./item/farm";
-import {IFarm} from "../../share/interfaces/IFarm";
+import React, { useEffect, useState } from 'react';
+import { useAppSelector, useAppDispatch } from '../../redux/data/store';
+import { fetchFarms } from '../../redux/reducer/farmSlice';
+import Farm from './item/farm';
+import { API_ENDPOINTS } from '../../share/ApiUrl';
 import axios from '../../axios-inst';
-import {apiURL} from '../../share/ApiUrl';
-import {RootState} from '../../redux/reducer/rootReducer';
-import {initFarms} from "../../redux/reducer/farmSlice"
-import {Cat as CatClass} from "../../share/models/Cat";
-import { PetType} from "../../share/interfaces/IPet";
-import {IFarmEx} from "../../share/interfaces/IFarmCalculation"
-import {initPets, clearPets} from "../../redux/reducer/petsSlice";
-import {Dog as DogClass} from "../../share/models/Dog";
+import { PetType, IPet } from '../../share/interfaces/IPet';
+import { IFarmEx } from '../../share/interfaces/IFarmCalculation';
+import { initPets, clearPets } from '../../redux/reducer/petsSlice';
+import { initFarmCalc, clearCaclulation } from '../../redux/reducer/calcFarmSlice';
+import { clearNewFarm } from '../../redux/reducer/createFarmSlice';
 import cssFarm from './farm.module.scss';
-import {initFarmCalc, clearCaclulation} from "redux/reducer/calcFarmSlice";
-import { clearNewFarm } from "redux/reducer/createFarmSlice";
+import { Alert, Spinner } from 'react-bootstrap';
+import Pagination from '../ui/pagination/Pagination';
+import { usePagination } from '../../hooks/usePagination';
 
+const FARMS_PER_PAGE = 6;
 
-const ListOfFarms = () => {
-    const dispatch = useDispatch();
+/**
+ * Component that displays a list of farms with their associated pet statistics
+ * Fetches data from APIs and calculates aggregated stats
+ */
+const ListOfFarms: React.FC = () => {
+  const dispatch = useAppDispatch();
 
-    const redux_farms = useSelector(
-        (state: RootState) => state.farms.farms
-    );
+  // Get farms and calculation data from Redux store
+  const {
+    farms,
+    loading: farmsLoading,
+    error: farmsError,
+  } = useAppSelector(state => ({
+    farms: state.farms.farms,
+    loading: state.farms.loading,
+    error: state.farms.error,
+  }));
 
-    const redux_calcFarms = useSelector(
-        (state: RootState) => state.calcFarmSlice.calcFarms
-    );
+  const calcFarms = useAppSelector(state => state.farmCalculation.calcFarms);
+  const [extFarms, setExtFarms] = useState<IFarmEx[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
-    const [extFarms, setextFarms] = useState<IFarmEx[]>([]);
-
-
-    useEffect(() => {
-        console.log('useEffect 1x ListOfFarms');
+  // Initial data fetching
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setIsLoading(true);
+        setError(null);
         dispatch(clearNewFarm());
-        if (redux_farms.length === 0) {
-            axios.get<IFarm[]>(apiURL.OWNERS)
-                .then(response => {
-                    // send to redux and wait for calculation
-                    dispatch(initFarms([...response.data]));
-                });
+        dispatch(clearPets());
+        dispatch(clearCaclulation());
 
-            axios.get<CatClass[]>(apiURL.CATS)
-                .then(response => {
-                        let cats = response.data.map(
-                            (pet: CatClass) => {
-                                let cat = {...pet};
-                                cat.type = PetType.CAT
-                                return cat;
-                            }
-                        );
-                        dispatch(clearPets());
-                        dispatch(clearCaclulation());
-                        dispatch(initPets(cats));
-                        dispatch(initFarmCalc(cats));
-
-                        axios.get<DogClass[]>(apiURL.DOGS)
-                            .then(response => {
-                                    let dogs = response.data.map(
-                                        (pet: DogClass) => {
-                                            let dog = {...pet};
-                                            dog.type = PetType.DOG
-                                            return dog;
-                                        }
-                                    );
-                                    dispatch(initPets(dogs));
-                                    dispatch(initFarmCalc(dogs));
-                                }
-                            );
-                    }
-                );
+        // Fetch farms if not already loaded
+        if (farms.length === 0) {
+          dispatch(fetchFarms());
         }
-    }, []);
 
-    useEffect(() => {
-        console.log('useEffect for change => redux_calcFarms, redux_farms');
-        console.dir(redux_calcFarms);
-        console.dir(redux_farms);
+        // Fetch cats
+        const catsResponse = await axios.get<IPet[]>(API_ENDPOINTS.PETS.CATS);
+        const cats = catsResponse.data.map((pet: IPet) => ({
+          ...pet,
+          type: PetType.CAT,
+        }));
 
-        if (redux_calcFarms.length > 0 && redux_farms.length > 0) {
+        dispatch(initPets(cats));
+        dispatch(initFarmCalc(cats));
 
-            let result = redux_farms.map(calc => {
-                let farm = redux_calcFarms.find(farm => calc.id === farm.Id)
-                return {...farm, ...calc} as IFarmEx;
-            })
-            console.dir(result);
-            setextFarms(result);
-        }
-    }, [redux_calcFarms, redux_farms]);
+        // Fetch dogs
+        const dogsResponse = await axios.get<IPet[]>(API_ENDPOINTS.PETS.DOGS);
+        const dogs = dogsResponse.data.map((pet: IPet) => ({
+          ...pet,
+          type: PetType.DOG,
+        }));
 
-    const farmsList = extFarms.map((item) =>
-        <Farm
-            key={item.id}
-            id={item.id}
-            name={item.name}
-            address={item.address}
-            averageDogsAge={(item.SumOfDogsAge / item.CountOfDogs).toFixed(2)}
-            averageCatsAge={(item.SumOfCatsAge / item.CountOfCats).toFixed(2)}
-            sumOfCats={item.CountOfCats}
-            sumOfDogs={item.CountOfDogs}
-        >
-        </Farm>);
+        dispatch(initPets(dogs));
+        dispatch(initFarmCalc(dogs));
+      } catch (err: any) {
+        setError(err.message || 'Failed to fetch farms and pets data');
+        console.error('Error fetching data:', err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
+    fetchData();
+  }, [dispatch]);
+
+  // Calculate extended farm statistics when data changes
+  useEffect(() => {
+    if (calcFarms.length > 0 && farms.length > 0) {
+      const extendedFarms = farms
+        .map(farm => {
+          const calculationData = calcFarms.find(calc => calc.Id === farm.id);
+          return calculationData ? ({ ...farm, ...calculationData } as IFarmEx) : null;
+        })
+        .filter(Boolean) as IFarmEx[];
+
+      setExtFarms(extendedFarms);
+    }
+  }, [calcFarms, farms]);
+
+  // Render loading state while data is being fetched
+  if (isLoading || farmsLoading) {
     return (
-
-        <div className={cssFarm.container}>
-            {farmsList}
-
-        </div>
+      <div className="d-flex justify-content-center my-5">
+        <Spinner animation="border" role="status">
+          <span className="visually-hidden">Loading...</span>
+        </Spinner>
+      </div>
     );
-}
+  }
+
+  // Render error message if something went wrong
+  if (error || farmsError) {
+    return (
+      <Alert variant="danger">
+        <Alert.Heading>Error loading farms</Alert.Heading>
+        <p>{error || farmsError}</p>
+      </Alert>
+    );
+  }
+
+  // Render empty state if no farms
+  if (extFarms.length === 0) {
+    return (
+      <Alert variant="info">
+        <p>No farms found. Create a new farm to get started!</p>
+      </Alert>
+    );
+  }
+
+  // Pagination logic
+  const {
+    currentPage,
+    totalPages,
+    pageNumbers,
+    setPage,
+    hasPreviousPage,
+    hasNextPage,
+    firstItemIndex,
+    lastItemIndex,
+  } = usePagination({
+    totalItems: extFarms.length,
+    itemsPerPage: FARMS_PER_PAGE,
+  });
+  const farmsToShow = extFarms.slice(firstItemIndex, lastItemIndex + 1);
+
+  // Render the list of farms with their statistics and pagination
+  return (
+    <div className={cssFarm.container}>
+      {farmsToShow.map(farm => (
+        <Farm
+          key={farm.id}
+          id={farm.id}
+          name={farm.name}
+          address={farm.address}
+          averageDogsAge={
+            farm.CountOfDogs > 0 ? (farm.SumOfDogsAge / farm.CountOfDogs).toFixed(2) : 'N/A'
+          }
+          averageCatsAge={
+            farm.CountOfCats > 0 ? (farm.SumOfCatsAge / farm.CountOfCats).toFixed(2) : 'N/A'
+          }
+          sumOfCats={farm.CountOfCats}
+          sumOfDogs={farm.CountOfDogs}
+        />
+      ))}
+      <div className="d-flex justify-content-center mt-4">
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          pageNumbers={pageNumbers}
+          onPageChange={setPage}
+          hasPreviousPage={hasPreviousPage}
+          hasNextPage={hasNextPage}
+        />
+      </div>
+    </div>
+  );
+};
 
 export default React.memo(ListOfFarms);

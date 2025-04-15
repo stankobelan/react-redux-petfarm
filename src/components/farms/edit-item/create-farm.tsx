@@ -1,155 +1,222 @@
-import React, {useEffect, useState} from "react";
-import {IFarm} from "../../../share/interfaces/IFarm";
-import {IPet, PetType} from "../../../share/interfaces/IPet";
-import {useHistory} from "react-router-dom";
-import {useDispatch, useSelector} from 'react-redux'
-import {addFarm} from '../../../redux/reducer/farmSlice';
+import React, { useEffect, useState } from 'react';
+import { Card, Container } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
+import { useAppDispatch, useAppSelector } from '../../../redux/data/store';
+import { IPet, PetType } from '../../../share/interfaces/IPet';
+import { Cat as CatClass } from '../../../share/models/Cat';
+import { Dog as DogClass } from '../../../share/models/Dog';
+import {
+  addPetToFarm,
+  clearNewFarm,
+  initFarmPets,
+  removePetFromFarm,
+} from '../../../redux/reducer/createFarmSlice';
+import { addFarm } from '../../../redux/reducer/farmSlice';
+import { addNewFarmToCalc, addPetsToNewFarmForCalc } from '../../../redux/reducer/calcFarmSlice';
+import { addArrayOfPets } from '../../../redux/reducer/petsSlice';
+import { addNotification } from '../../../redux/reducer/commonSlice';
+import GetListOfPets from '../../pets/pets-list';
+import FarmFormular from './farm-form';
+import { CreateFarmDto } from '../../../share/interfaces/IFarm';
+import { API_ENDPOINTS } from '../../../share/ApiUrl';
 import axios from '../../../axios-inst';
-import {apiURL} from '../../../share/ApiUrl';
-import FarmFormular from "./farm-form";
-import {RootState} from "../../../redux/reducer/rootReducer";
-import {Cat as CatClass} from "../../../share/models/Cat";
-import {Dog as DogClass} from "../../../share/models/Dog";
-import {addPetToFarm, clearNewFarm, initFarms, removePetFromFarm} from "../../../redux/reducer/createFarmSlice";
-import {addNewFarmToCalc, addPetsToNewFarmForCalc} from "../../../redux/reducer/calcFarmSlice";
-import {addArrayOfPets} from "../../../redux/reducer/petsSlice";
-import GetListOfPets from "../../pets/pets-list";
-import EMW from "../../../hoc/EMW/EMW";
 
+/**
+ * Create Farm component
+ * Handles creating a new farm with pets
+ */
+const CreateFarm: React.FC = (): React.ReactElement => {
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
-const CreateFarm = () => {
-    const dispatch = useDispatch();
-    let history = useHistory();
-    const onSubmit = () => {
-        console.log()
-        const data = {id: 0, name: name, address: address};
-        axios.post<IFarm>(apiURL.OWNERS, data)
-            .then(response => {
-                dispatch(addFarm(response.data.id, response.data.name, response.data.address));
-                dispatch(addNewFarmToCalc(response.data));
-                let cats = newPetsForFarm
-                    .filter(pet => pet.type === PetType.CAT)
-                    .map(pet => {
-                        let cat = {...pet} as CatClass;
-                        cat.petOwnerId = response.data.id;
-                        return cat;
-                    });
+  // Local state
+  const [name, setName] = useState<string>('');
+  const [address, setAddress] = useState<string>('');
+  const [description, setDescription] = useState<string>('');
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
-                let dogs = newPetsForFarm
-                    .filter(pet => pet.type === PetType.DOG)
-                    .map(pet => {
-                        let dog = {...pet} as DogClass
-                        dog.petOwnerId = response.data.id;
-                        return dog;
-                    });
+  // Redux state
+  // Redux state
+  const pets = useAppSelector(state => state.pets.pets);
+  const currentPetsOnFarm = useAppSelector(state => state.farmForm.farmPets);
+  const availableCatsForFarm = useAppSelector(state => state.farmForm.offerCats);
+  const availableDogsForFarm = useAppSelector(state => state.farmForm.offerDogs);
+  // Derived state
+  const [newPetsForFarm, setNewPetsForFarm] = useState<IPet[]>([]);
+  const [availableDogs, setAvailableDogs] = useState<IPet[]>([]);
+  const [availableCats, setAvailableCats] = useState<IPet[]>([]);
 
-                axios.post<CatClass[]>(apiURL.CATS, cats).then(responses => {
-                        let lCats = responses.data
-                            .map(pet => {
-                                let cat = {...pet} as CatClass;
-                                cat.type = PetType.CAT;
-                                return cat;
-                            });
+  // Initialize available pets
+  useEffect(() => {
+    dispatch(initFarmPets([...pets]));
+  }, [pets, dispatch]);
 
-                        dispatch(addArrayOfPets(lCats));
-                        dispatch(addPetsToNewFarmForCalc(lCats));
-                    }
-                );
+  // Sync pets with Redux state
+  useEffect(() => {
+    setNewPetsForFarm([...currentPetsOnFarm]);
+  }, [currentPetsOnFarm]);
 
-                axios.post<DogClass[]>(apiURL.DOGS, dogs).then(responses => {
+  useEffect(() => {
+    setAvailableCats([...availableCatsForFarm]);
+  }, [availableCatsForFarm]);
 
-                        let lDogs = responses.data
-                            .map(pet => {
-                                let cat = {...pet} as DogClass;
-                                cat.type = PetType.DOG;
-                                return cat;
-                            });
-                        dispatch(addArrayOfPets(lDogs));
-                        dispatch(addPetsToNewFarmForCalc(lDogs));
-                    }
-                );
+  useEffect(() => {
+    setAvailableDogs([...availableDogsForFarm]);
+  }, [availableDogsForFarm]);
 
-                dispatch(clearNewFarm());
-            })
-        history.push("/");
-    };
+  /**
+   * Handle form submission for farm creation
+   */
+  const handleSubmit = async (): Promise<void> => {
+    try {
+      setIsSubmitting(true);
 
-    const pets = useSelector(
-        (state: RootState) => state.pets.pets
-    );
-    const currentPetsOnFarm = useSelector(
-        (state: RootState) => state.createFarmSlice.farmPets
-    );
-    const availableCatsForFarm = useSelector(
-        (state: RootState) => state.createFarmSlice.offerCats
-    );
-    const availableDogsForFarm = useSelector(
-        (state: RootState) => state.createFarmSlice.offerDogs
-    );
+      // Create farm data object
+      const farmData: CreateFarmDto = {
+        name,
+        address,
+        description,
+      };
 
-    const [newPetsForFarm, setNewPetsForFarm] = useState<IPet[]>([]);
-    const [name, setName] = useState<string>('');
-    const [address, setAddress] = useState<string>('');
-    const [availableDogs, setAvailableDogs] = useState<IPet[]>([]);
-    const [availableCats, setAvailableCats] = useState<IPet[]>([]);
+      // Create farm via API
+      const response = await axios.post(API_ENDPOINTS.FARMS, farmData);
+      const newFarm = response.data;
 
+      // Update Redux state with new farm
+      dispatch(addFarm(newFarm));
+      dispatch(addNewFarmToCalc(newFarm));
 
-    useEffect(() => {
-        console.log('init for form');
-        dispatch(initFarms([...pets]));
-    }, [pets])
+      // Process cats for the new farm
+      const cats = newPetsForFarm
+        .filter(pet => pet.type === PetType.CAT)
+        .map(pet => {
+          const cat = { ...pet } as CatClass;
+          cat.farmId = newFarm.id;
+          return cat;
+        });
 
-    useEffect(() => {
-        console.log('sync newPetsForFarm');
-        setNewPetsForFarm([...currentPetsOnFarm]);
-    }, [currentPetsOnFarm])
+      // Process dogs for the new farm
+      const dogs = newPetsForFarm
+        .filter(pet => pet.type === PetType.DOG)
+        .map(pet => {
+          const dog = { ...pet } as DogClass;
+          dog.farmId = newFarm.id;
+          return dog;
+        });
 
-    useEffect(() => {
-        console.log('sync avaliableCatsForFarm');
-        setAvailableCats([...availableCatsForFarm]);
-    }, [availableCatsForFarm])
+      // Create cats via API
+      if (cats.length > 0) {
+        const catsResponse = await axios.post(API_ENDPOINTS.PETS.CATS, cats);
+        const updatedCats = catsResponse.data.map((pet: IPet) => ({
+          ...pet,
+          type: PetType.CAT,
+        }));
 
-    useEffect(() => {
-        console.log('sync avaliableDogsForFarm');
-        setAvailableDogs([...availableDogsForFarm]);
-    }, [availableDogsForFarm])
+        dispatch(addArrayOfPets(updatedCats));
+        dispatch(addPetsToNewFarmForCalc(updatedCats));
+      }
 
+      // Create dogs via API
+      if (dogs.length > 0) {
+        const dogsResponse = await axios.post(API_ENDPOINTS.PETS.DOGS, dogs);
+        const updatedDogs = dogsResponse.data.map((pet: IPet) => ({
+          ...pet,
+          type: PetType.DOG,
+        }));
 
-    const removePetHandler = (index: number) => {
-        let pet = {...newPetsForFarm[index]};
-        dispatch(removePetFromFarm(pet));
+        dispatch(addArrayOfPets(updatedDogs));
+        dispatch(addPetsToNewFarmForCalc(updatedDogs));
+      }
+
+      // Clear form state
+      dispatch(clearNewFarm());
+
+      // Show success notification
+      dispatch(
+        addNotification({
+          type: 'success',
+          message: `Farm "${name}" was created successfully!`,
+        })
+      );
+
+      // Navigate to farms list
+      navigate('/');
+    } catch (error) {
+      console.error('Failed to create farm:', error);
+      dispatch(
+        addNotification({
+          type: 'error',
+          message: 'Failed to create farm. Please try again.',
+        })
+      );
+    } finally {
+      setIsSubmitting(false);
     }
+  };
 
-    const addCatToFarmHandler = (index: number) => {
-        let pet = {...availableCats[index]};
-        dispatch(addPetToFarm(pet));
-    }
+  /**
+   * Remove a pet from the farm
+   */
+  const handleRemovePet = (index: number): void => {
+    const pet = { ...newPetsForFarm[index] };
+    dispatch(removePetFromFarm(pet));
+  };
 
-    const addDogToFarmHandler = (index: number) => {
-        let pet = {...availableDogs[index]};
-        dispatch(addPetToFarm(pet));
-    }
+  /**
+   * Add a cat to the farm
+   */
+  const handleAddCat = (index: number): void => {
+    const cat = { ...availableCats[index] };
+    dispatch(addPetToFarm(cat));
+  };
 
-    return (
-        <EMW>
-            <FarmFormular
-                address={address}
-                name={name}
-                onSubmit={onSubmit}
-                setAddress={setAddress}
-                setName={setName}
-                addNewCats={availableCats}
-                addNewDogs={availableDogs}
-                setNewCatForFarm={addCatToFarmHandler}
-                setNewDogForFarm={addDogToFarmHandler}
-            />
+  /**
+   * Add a dog to the farm
+   */
+  const handleAddDog = (index: number): void => {
+    const dog = { ...availableDogs[index] };
+    dispatch(addPetToFarm(dog));
+  };
+
+  return (
+    <Container className="py-4">
+      <h1 className="mb-4">Create New Farm</h1>
+
+      <Card className="mb-4">
+        <Card.Body>
+          <FarmFormular
+            name={name}
+            address={address}
+            description={description}
+            onSubmit={handleSubmit}
+            setName={setName}
+            setAddress={setAddress}
+            setDescription={setDescription}
+            addNewCats={availableCats}
+            addNewDogs={availableDogs}
+            setNewCatForFarm={handleAddCat}
+            setNewDogForFarm={handleAddDog}
+            isSubmitting={isSubmitting}
+          />
+        </Card.Body>
+      </Card>
+
+      {currentPetsOnFarm.length > 0 && (
+        <Card>
+          <Card.Header>
+            <h2 className="h5 mb-0">Pets for this Farm</h2>
+          </Card.Header>
+          <Card.Body>
             <GetListOfPets
-                // farmId={farmToEdit.id}
-                edit={true}
-                clickRemoveOrFeed={removePetHandler}
-                listOfPets={currentPetsOnFarm}
+              edit={true}
+              clickRemoveOrFeed={handleRemovePet}
+              listOfPets={currentPetsOnFarm}
             />
-        </EMW>
-    );
-}
+          </Card.Body>
+        </Card>
+      )}
+    </Container>
+  );
+};
+
 export default React.memo(CreateFarm);

@@ -1,15 +1,15 @@
 //reference to palette: https://flatuicolors.com/palette/cn
 
 $colors: (
-        'success': #0fff00,
-        'failure': #ff2102,
-        'alert': #ffa400,
-        'primary': #0d7bcf,
-        'primary-disabled': #61676b,
-        'secondary': #f3c700,
-        'secondary-disabled': #d3c16f,
-        'secondary-alt': #ffffff,
-        'header': #222222,
+  'success': #0fff00,
+  'failure': #ff2102,
+  'alert': #ffa400,
+  'primary': #0d7bcf,
+  'primary-disabled': #61676b,
+  'secondary': #f3c700,
+  'secondary-disabled': #d3c16f,
+  'secondary-alt': #ffffff,
+  'header': #222222,
 );
 
 /*#1D86B3, #0066b5*/
@@ -56,25 +56,96 @@ $colors: (
 }
 
 $light-map: (
-        'level_8': 55,
-        'level_7': 45,
-        'level_6': 35,
-        'level_5': 25,
-        'level_4': 20,
-        'level_3': 15,
-        'level_2': 10,
-        'level_1': 5,
-        'level_0': 3
+  'level_8': 55,
+  'level_7': 45,
+  'level_6': 35,
+  'level_5': 25,
+  'level_4': 20,
+  'level_3': 15,
+  'level_2': 10,
+  'level_1': 5,
+  'level_0': 3,
 );
 
 $opacity-map: (
-        'ultra-light': 0.1,
-        'light': 0.3,
-        'medium': 0.5,
-        'dark': 0.7,
-        'ultra-dark': 0.9
+  'ultra-light': 0.1,
+  'light': 0.3,
+  'medium': 0.5,
+  'dark': 0.7,
+  'ultra-dark': 0.9,
 );
 
+// Custom color variables
+$primary: #3a6ea5;
+$secondary: #5d8aa8;
+$success: #4caf50;
+$info: #58b0d9;
+$warning: #f9a602;
+$danger: #e53935;
+$light: #f8f9fa;
+$dark: #343a40;
+
+// Farm-specific colors
+$farm-green: #5d965d;
+$farm-brown: #8b4513;
+$farm-yellow: #f5d76e;
+
+// Pet-specific colors
+$dog-primary: #725e58;
+$cat-primary: #7f8bab;
+
+// Typography
+$font-family-base: 'Roboto', 'Segoe UI', sans-serif;
+$font-family-headings: 'Montserrat', sans-serif;
+
+// Spacing
+$spacer: 1rem;
+$spacers: (
+  0: 0,
+  1: $spacer * 0.25,
+  2: $spacer * 0.5,
+  3: $spacer,
+  4: $spacer * 1.5,
+  5: $spacer * 3,
+  6: $spacer * 4.5,
+);
+
+// Border radiuses
+$border-radius: 0.375rem;
+$border-radius-sm: 0.25rem;
+$border-radius-lg: 0.5rem;
+$border-radius-pill: 50rem;
+
+// Shadows
+$box-shadow-sm: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+$box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+$box-shadow-lg: 0 1rem 3rem rgba(0, 0, 0, 0.175);
+
+// Custom breakpoints
+$grid-breakpoints: (
+  xs: 0,
+  sm: 576px,
+  md: 768px,
+  lg: 992px,
+  xl: 1200px,
+  xxl: 1400px,
+);
+
+// Override Bootstrap variables
+$theme-colors: (
+  'primary': $primary,
+  'secondary': $secondary,
+  'success': $success,
+  'info': $info,
+  'warning': $warning,
+  'danger': $danger,
+  'light': $light,
+  'dark': $dark,
+  'farm-green': $farm-green,
+  'farm-brown': $farm-brown,
+  'dog': $dog-primary,
+  'cat': $cat-primary,
+);
 
 /*
 // Example usage:

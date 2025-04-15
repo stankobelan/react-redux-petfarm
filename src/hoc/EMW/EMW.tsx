@@ -1,3 +1,13 @@
-const emw = (props:any) => props.children;
+import React from 'react';
 
-export default emw;
+interface EMWProps {
+  children: React.ReactNode;
+}
+
+/**
+ * Simple wrapper component that just renders its children
+ * EMW = Element/Component Wrapper
+ */
+const EMW: React.FC<EMWProps> = ({ children }) => children;
+
+export default EMW;

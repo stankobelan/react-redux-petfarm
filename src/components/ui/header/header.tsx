@@ -1,89 +1,65 @@
-import React, {Component} from "react";
-import {
-    MDBNavbar, MDBNavbarBrand, MDBNavbarNav, MDBNavItem, MDBNavLink, MDBNavbarToggler, MDBCollapse
-} from "mdbreact";
-import {
-    Switch,
-    Route, BrowserRouter as Router
-} from 'react-router-dom';
+import React, { useState } from 'react';
+import { Navbar, Nav, Container } from 'react-bootstrap';
+import { Routes, Route, Link } from 'react-router-dom';
 
-import EMW from '../../../hoc/EMW/EMW'
-import ListOfFarms from '../../../components/farms/listOfFarms'
-import EditFarm from "../../../components/farms/edit-item/edit-farm";
-import CreateFarm from "../../../components/farms/edit-item/create-farm";
-import ListOfPets from "../../../components/pets/list-of-pets";
-import About from "../../../components/ui/About/About";
-import ContactFormular from "../contact/contact";
+import ListOfFarms from '../../farms/listOfFarms';
+import EditFarm from '../../farms/edit-item/edit-farm';
+import CreateFarm from '../../farms/edit-item/create-farm';
+import ListOfPets from '../../pets/list-of-pets';
+import About from '../About/About';
+import ContactFormular from '../contact/contact';
 
+/**
+ * Main navigation component with routing configuration
+ * Provides navigation links and defines available routes
+ */
+const NavbarPage: React.FC = () => {
+  const [expanded, setExpanded] = useState<boolean>(false);
 
-class NavbarPage extends Component {
-    state = {
-        isOpen: false
-    };
+  const toggleNavbar = () => {
+    setExpanded(!expanded);
+  };
 
-    toggleCollapse = () => {
-        this.setState({isOpen: !this.state.isOpen});
-    }
+  return (
+    <>
+      <Navbar bg="primary" variant="dark" expand="md" expanded={expanded}>
+        <Container>
+          <Navbar.Brand as={Link} to="/">
+            Pet Farming App
+          </Navbar.Brand>
+          <Navbar.Toggle aria-controls="basic-navbar-nav" onClick={toggleNavbar} />
+          <Navbar.Collapse id="basic-navbar-nav">
+            <Nav className="me-auto">
+              <Nav.Link as={Link} to="/" onClick={() => setExpanded(false)}>
+                Home
+              </Nav.Link>
+              <Nav.Link as={Link} to="/create-farm" onClick={() => setExpanded(false)}>
+                Create Farm
+              </Nav.Link>
+              <Nav.Link as={Link} to="/about" onClick={() => setExpanded(false)}>
+                About
+              </Nav.Link>
+              <Nav.Link as={Link} to="/contact" onClick={() => setExpanded(false)}>
+                Contact
+              </Nav.Link>
+            </Nav>
+          </Navbar.Collapse>
+        </Container>
+      </Navbar>
 
-    render() {
-        return (
-
-                <Router>
-                    <MDBNavbar color="default-color" dark expand="md">
-                        <MDBNavbarBrand>
-                            <strong className="white-text">Pet farming app</strong>
-                        </MDBNavbarBrand>
-                        <MDBNavbarToggler onClick={this.toggleCollapse}/>
-                        <MDBCollapse id="navbarCollapse3" isOpen={this.state.isOpen} navbar>
-                            <MDBNavbarNav left>
-                                <MDBNavItem active>
-                                    <MDBNavLink to="/">Home</MDBNavLink>
-                                </MDBNavItem>
-                                <MDBNavItem>
-                                    <MDBNavLink to="/create-farm">Create Farm</MDBNavLink>
-                                </MDBNavItem>
-                                <MDBNavItem>
-                                    <MDBNavLink to="/about">About</MDBNavLink>
-                                </MDBNavItem>
-                                <MDBNavItem>
-                                    <MDBNavLink to="/contact">Contact me</MDBNavLink>
-                                </MDBNavItem>
-                            </MDBNavbarNav>
-                        </MDBCollapse>
-                    </MDBNavbar>
-
-                    <Switch>
-                        <Route path="/" exact render={() => <EMW> <ListOfFarms/> </EMW>}/>
-                        <Route path="/about"
-                               exact
-                               render={() => <About/>}/>
-                        <Route
-                            path="/contact"
-                            exact
-                            render={() => <ContactFormular/>}/>
-                        <Route
-                            path="/edit-farm/:id"
-                            exact
-                            render={() => <EditFarm/>}/>
-                        <Route
-                            path="/create-farm"
-                            exact
-                            render={() => <CreateFarm/>}/>
-
-                        <Route
-                            path="/farm-pets/:id"
-                            exact
-                            render={() => <ListOfPets/>}/>
-
-
-                        <Route render={() => <h1>Page not found</h1>}/>
-
-
-                    </Switch>
-
-                </Router>
-        );
-    }
-}
+      <Container className="mt-4">
+        <Routes>
+          <Route path="/" element={<ListOfFarms />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/contact" element={<ContactFormular />} />
+          <Route path="/edit-farm/:id" element={<EditFarm />} />
+          <Route path="/create-farm" element={<CreateFarm />} />
+          <Route path="/farm-pets/:id" element={<ListOfPets />} />
+          <Route path="*" element={<h1>Page not found</h1>} />
+        </Routes>
+      </Container>
+    </>
+  );
+};
 
 export default NavbarPage;

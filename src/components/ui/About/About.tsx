@@ -1,41 +1,88 @@
-import React from "react";
+import React from 'react';
+import { Container, Card, Row, Col, ListGroup } from 'react-bootstrap';
+import { environment } from '../../../config/environment';
 
-const About = (props: any) => {
+/**
+ * About page component that displays application information
+ */
+const About: React.FC = () => {
+  return (
+    <Container className="py-4">
+      <h1 className="mb-4">About Pet Farm Management</h1>
 
-    return (<div className="container">
+      <Row className="mb-5">
+        <Col md={8}>
+          <Card>
+            <Card.Body>
+              <Card.Title as="h2">Application Overview</Card.Title>
+              <Card.Text>
+                Pet Farm Management is a comprehensive application designed to help farm owners
+                manage their animals efficiently. The application allows users to keep track of all
+                farms, pets, feeding schedules, and important pet statistics.
+              </Card.Text>
+              <Card.Text>
+                Version: <strong>{environment.appVersion}</strong>
+              </Card.Text>
+            </Card.Body>
+          </Card>
+        </Col>
 
-            Pes a mačka
-            <ul>
-                <li> Na serveri vytvorit C# model pre psa, mačku a majitela, ktory vlastni psy a macky. Pes a
-                    macka nech maju spolocnu property “PocetKrmeni” a „DatumNarodenia“ (kludne aj ine).
-                </li>
-                <li> Navrhnut graficky DB model pre tuto situaciu (MSSQL) + vytvorenie DB a tabuliek. Naplnit
-                    do DB zoznam 15 psov a 15 maciek.
-                </li>
-                <li> Navrhnut UI v reacte – na uvodnej obrazovke bude zoznam majitelov – nacitanych z DB. Po
-                    kliku na majitela sa majitel akokeby “rozklikne” alebo “expanduje” dole a zobrazia sa
-                    podrobne info o majitelovi a vykreslia sa vsetky jeho psy a macky (nech je osobitna
-                    komponenta na psa a na macku). Pri kazdom zvierati zobrazit aj jeho vek vo formate napr „6
-                    rokov 2 mesiace 8 dní“ (nie len datum narodenia) a pocet krmeni + dalsie properties. Tento
-                    vek generovat vo frontende. Pri majitelovi sa taktiez zobrazi priemerny vek jeho zvierat.
-                    Plus zobrazit aj dalsie majitelove properties.
-                </li>
-                <li> Kazdy pes a macka budu mat tlacidlo Nakrmit, tymto sa inkrementuje pocet nakrmeni daneho
-                    zvierata. Toto sa odosle na server a ulozi sa to aj v DB.
-                </li>
-                <li> Kazdy majitel bude mat v sebe edit tlacidlo – po kliku sa otvori nove modalne okno, v
-                    ktorom sa bude dat editovat majitel, jeho zoznam psov a maciek. Rovnako tak sa bude dat
-                    vytvorit aj novy majitel a bude sa mu dat priradit psy a macky. Psy a macky netreba vytvarat
-                    novych – vzdy sa bude dat vybrat zo zoznamu, ktory je ulozeny v DB. Pre jednoduchost
-                    neriesme ci viacero majitelov vlastni rovnake zviera – riesit budeme len to aby 1 majitel
-                    nemal viac krat priradene rovnake zviera.
-                </li>
-                <li> Po ulozeni editovaneho majitela sa odosle poziadavka na server, server vygeneruje SQL
-                    prikazy a updatne majitela aj v DB. Na edit/insert moze byt bud jedna funkcia (server pozrie
-                    do DB a zisti ci robit edit alebo insert) alebo mozu byt kludne aj dve osobitne.
-                </li>
-            </ul>
+        <Col md={4}>
+          <Card bg="light">
+            <Card.Body>
+              <Card.Title as="h3">Features</Card.Title>
+              <ListGroup variant="flush">
+                <ListGroup.Item>Farm Management</ListGroup.Item>
+                <ListGroup.Item>Pet Tracking (Dogs & Cats)</ListGroup.Item>
+                <ListGroup.Item>Pet Age Statistics</ListGroup.Item>
+                <ListGroup.Item>Feeding Schedules</ListGroup.Item>
+              </ListGroup>
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
 
-    </div>);
-}
+      <Row className="mb-4">
+        <Col md={6}>
+          <Card>
+            <Card.Body>
+              <Card.Title as="h3">Technology Stack</Card.Title>
+              <ListGroup variant="flush">
+                <ListGroup.Item>React 18 with TypeScript</ListGroup.Item>
+                <ListGroup.Item>Redux with Redux Toolkit</ListGroup.Item>
+                <ListGroup.Item>React Router v6</ListGroup.Item>
+                <ListGroup.Item>Bootstrap 5 for UI components</ListGroup.Item>
+                <ListGroup.Item>Axios for API communication</ListGroup.Item>
+              </ListGroup>
+            </Card.Body>
+          </Card>
+        </Col>
+
+        <Col md={6}>
+          <Card>
+            <Card.Body>
+              <Card.Title as="h3">Getting Started</Card.Title>
+              <Card.Text>
+                To get started with Pet Farm Management, create a new farm by clicking on the
+                "Create Farm" option in the navigation menu. Once you've created a farm, you can add
+                pets to it and start tracking their information.
+              </Card.Text>
+              <Card.Text>
+                For any questions or support needs, please use the Contact page to get in touch with
+                our team.
+              </Card.Text>
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
+
+      <Card className="text-center text-muted">
+        <Card.Footer>
+          <small>Pet Farm Management © {new Date().getFullYear()}</small>
+        </Card.Footer>
+      </Card>
+    </Container>
+  );
+};
+
 export default About;

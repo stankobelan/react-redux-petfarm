@@ -1,16 +1,22 @@
-import { combineReducers } from '@reduxjs/toolkit'
-import farms from './farmSlice'
-import pets from './petsSlice'
-import createFarmSlice from './createFarmSlice'
-import calcFarmSlice from './calcFarmSlice'
+import { combineReducers } from '@reduxjs/toolkit';
+import farmsReducer from './farmSlice';
+import petsReducer from './petsSlice';
+import farmFormReducer from './createFarmSlice';
+import farmCalculationReducer from './calcFarmSlice';
+import commonReducer from './commonSlice';
 
+/**
+ * Root reducer that combines all feature reducers
+ * Each reducer is responsible for a specific slice of the state
+ */
 const rootReducer = combineReducers({
-    farms,
-    pets,
-    createFarmSlice,
-    calcFarmSlice
-})
+  farms: farmsReducer,
+  pets: petsReducer,
+  farmForm: farmFormReducer,
+  farmCalculation: farmCalculationReducer,
+  common: commonReducer,
+});
 
-export type RootState = ReturnType<typeof rootReducer>
+export type RootState = ReturnType<typeof rootReducer>;
 
-export default rootReducer
+export default rootReducer;

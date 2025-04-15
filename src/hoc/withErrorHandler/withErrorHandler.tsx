@@ -1,57 +1,57 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect } from 'react';
+import { AxiosInstance } from 'axios';
+import Modal from '../../components/ui/modal/Modal';
 
-import EMW from '../EMW/EMW';
-import {AxiosStatic} from "axios";
-import Modal from "../../components/ui/modal/Modal";
+/**
+ * Higher-Order Component that provides global error handling for API requests
+ *
+ * @param WrappedComponent - Component to be wrapped with error handling
+ * @param axios - Axios instance to intercept requests/responses
+ * @returns A new component with error handling capabilities
+ */
+const withErrorHandler = <P extends object>(
+  WrappedComponent: React.ComponentType<P>,
+  axios: AxiosInstance
+) => {
+  return (props: P) => {
+    const [error, setError] = useState<Error | null>(null);
 
-interface IStateError {
-     error: {
-         message: string
-     } | null
-}
+    useEffect(() => {
+      // Request interceptor to clear errors when making new requests
+      const reqInterceptor = axios.interceptors.request.use(req => {
+        setError(null);
+        return req;
+      });
 
-const withErrorHandler = ( WrappedComponent : React.ComponentType, axios : AxiosStatic ) => {
-    return class extends Component {
-        state : IStateError = {
-            error : null
+      // Response interceptor to catch errors
+      const resInterceptor = axios.interceptors.response.use(
+        res => res,
+        err => {
+          setError(err);
+          return Promise.reject(err);
         }
-        reqInterceptor: number = 0;
-        resInterceptor: number = 0;
+      );
 
-        componentWillMount () {
-            this.reqInterceptor = axios.interceptors.request.use( req => {
-                this.setState( { error: null } );
-                return req;
-            } );
-            this.resInterceptor = axios.interceptors.response.use( res => res, error => {
-                this.setState( { error: error } );
-            } );
-        }
+      // Clean up interceptors when component unmounts
+      return () => {
+        axios.interceptors.request.eject(reqInterceptor);
+        axios.interceptors.response.eject(resInterceptor);
+      };
+    }, []);
 
-        componentWillUnmount () {
-            axios.interceptors.request.eject( this.reqInterceptor );
-            axios.interceptors.response.eject( this.resInterceptor );
-        }
+    const errorConfirmedHandler = () => {
+      setError(null);
+    };
 
-        errorConfirmedHandler = () => {
-            this.setState( { error: null } );
-        }
-
-
-        render () {
-            let error = this.state.error;
-            return (
-                <EMW>
-                    <Modal
-                        show={error}
-                        modalClosed={this.errorConfirmedHandler}>
-                        { error  ? error.message : null}
-                    </Modal>
-                    <WrappedComponent {...this.props} />
-                </EMW>
-            );
-        }
-    }
-}
+    return (
+      <>
+        <Modal show={!!error} modalClosed={errorConfirmedHandler} title="An Error Occurred">
+          {error ? error.message || 'Something went wrong' : null}
+        </Modal>
+        <WrappedComponent {...props} />
+      </>
+    );
+  };
+};
 
 export default withErrorHandler;

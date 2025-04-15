@@ -1,36 +1,54 @@
 import React from 'react';
 import cssclass from './pet.module.scss';
+import { PetType } from '../../../share/interfaces/IPet';
 
-interface IPetProps {
-    children: any,
-    name: string | null,
-    age: string,
-    pocetKrmeni: number,
-    typ: string,
-    edit: boolean,
-    click: ()=>void
+interface PetProps {
+  /** Pet's name */
+  name: string;
+  /** Pet's age as formatted string */
+  age: string;
+  /** Number of times this pet needs to be fed per day */
+  feedingsPerDay: number;
+  /** Type of pet (dog or cat) */
+  type: PetType;
+  /** Whether pet is in edit mode */
+  edit: boolean;
+  /** Click handler for main button action */
+  onClick: () => void;
+  /** Optional child elements (typically pet icon) */
+  children?: React.ReactNode;
 }
 
-const Pet = (props: IPetProps) => {
-    return (
-        <div className={cssclass.card}>
-            {props.children}
-            <p className={cssclass.card__name}>{props.name}</p>
+/**
+ * Pet component displays information about a single pet
+ * Shows pet details and action button for feeding or removing
+ */
+const Pet: React.FC<PetProps> = ({ name, age, feedingsPerDay, type, edit, onClick, children }) => {
+  const buttonText = edit ? 'Remove' : `Feed the ${type.toLowerCase()}`;
+  const buttonClasses = [cssclass.btn, cssclass.drawing__border, cssclass.btn_container].join(' ');
 
-            <div className={cssclass.card__address}>
-                {props.age}
-            </div>
+  return (
+    <div className={cssclass.card}>
+      {/* Pet icon */}
+      {children}
 
-            <div className={cssclass.card__address}>
-                {props.pocetKrmeni} PocetKrmeni
-            </div>
+      {/* Pet details */}
+      <p className={cssclass.card__name}>{name}</p>
 
-            <button className={[cssclass.btn, cssclass.drawing__border, cssclass.btn_container].join(' ')}
-                 onClick={props.click}
-                //disabled={props.isFeedingDisabled}
-            >{props.edit ? 'Remove' : 'Feed the ' + props.typ}</button>
-        </div>
-    );
+      <div className={cssclass.card__address}>
+        <strong>Age:</strong> {age}
+      </div>
+
+      <div className={cssclass.card__address}>
+        <strong>Feedings per day:</strong> {feedingsPerDay}
+      </div>
+
+      {/* Action button */}
+      <button className={buttonClasses} onClick={onClick} aria-label={buttonText}>
+        {buttonText}
+      </button>
+    </div>
+  );
 };
 
 export default React.memo(Pet);

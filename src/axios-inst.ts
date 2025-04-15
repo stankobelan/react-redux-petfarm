@@ -1,26 +1,27 @@
 import axios from 'axios';
+import { API_URL } from './share/ApiUrl';
 
+/**
+ * Pre-configured axios instance for API requests
+ * - Sets the base URL from environment configuration
+ * - Sets common headers for all requests
+ */
 const instance = axios.create({
-    baseURL: 'https://localhost:5001/api'
+  baseURL: API_URL,
+  headers: {
+    'Content-Type': 'application/json',
+  },
 });
 
-instance.defaults.headers.post['Content-Type'] = 'application/json';
-axios.interceptors.request.use(request => {
-    console.log(request);
-    // Edit request config
-    return request;
-}, error => {
-    console.log(error);
+// Add request interceptor for authentication if needed
+instance.interceptors.request.use(
+  config => {
+    // You can add auth tokens or other request modifications here
+    return config;
+  },
+  error => {
     return Promise.reject(error);
-});
-
-axios.interceptors.response.use(response => {
-    console.log(response);
-    // Edit request config
-    return response;
-}, error => {
-    console.log(error);
-    return Promise.reject(error);
-});
+  }
+);
 
 export default instance;

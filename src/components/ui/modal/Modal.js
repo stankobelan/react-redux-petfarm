@@ -1,34 +1,41 @@
-import React, { Component } from 'react';
-import Backdrop from '../backdrop/Backdrop'
-import classes from './Modal.css';
-import Aux from '../../../hoc/EMW/EMW';
+import React from 'react';
+import { Modal as BootstrapModal, Button } from 'react-bootstrap';
 
-
-class Modal extends Component {
-
-    shouldComponentUpdate ( nextProps, nextState ) {
-        return nextProps.show !== this.props.show || nextProps.children !== this.props.children;
-    }
-
-    componentWillUpdate () {
-        console.log('[modal] WillUpdate');
-    }
-
-    render () {
-        return (
-            <Aux>
-                <Backdrop show={this.props.show} clicked={this.props.modalClosed} />
-                <div
-                    className={classes.Modal}
-                    style={{
-                        transform: this.props.show ? 'translateY(0)' : 'translateY(-100vh)',
-                        opacity: this.props.show ? '1' : '0'
-                    }}>
-                    {this.props.children}
-                </div>
-            </Aux>
-        )
-    }
+interface ModalProps {
+  show: boolean;
+  modalClosed: () => void;
+  children: React.ReactNode;
+  title?: string;
 }
 
-export default Modal;
+/**
+ * Modal component that uses React Bootstrap
+ * Shows a modal dialog with customizable content and a close button
+ */
+const Modal: React.FC<ModalProps> = ({ show, modalClosed, children, title }) => {
+  return (
+    <BootstrapModal
+      show={show}
+      onHide={modalClosed}
+      backdrop="static"
+      keyboard={false}
+      centered
+    >
+      {title && (
+        <BootstrapModal.Header closeButton>
+          <BootstrapModal.Title>{title}</BootstrapModal.Title>
+        </BootstrapModal.Header>
+      )}
+      <BootstrapModal.Body>
+        {children}
+      </BootstrapModal.Body>
+      <BootstrapModal.Footer>
+        <Button variant="secondary" onClick={modalClosed}>
+          Close
+        </Button>
+      </BootstrapModal.Footer>
+    </BootstrapModal>
+  );
+};
+
+export default React.memo(Modal);

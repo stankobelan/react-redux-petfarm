@@ -1,72 +1,99 @@
 import React from 'react';
-import {Link} from "react-router-dom";
+import { Link } from 'react-router-dom';
+import { Accordion, Card } from 'react-bootstrap';
+import { ReactComponent as FarmLogo } from '../../../assets/farmer.svg';
 import cssclass from '../farm.module.scss';
-import {ReactComponent as FarmLogo} from '../../../assets/farmer.svg';
-import Accordion from "react-bootstrap/cjs/Accordion";
-import Card from "react-bootstrap/cjs/Card";
-import  './farm.scss';
+import './farm.scss';
 
 export interface FarmProps {
-    id: number | null,
-    address: string | null,
-    name: string | null,
-    children: any[],
-    averageDogsAge: string,
-    averageCatsAge: string,
-    sumOfCats: number,
-    sumOfDogs: number
+  /** Unique farm identifier */
+  id: number;
+  /** Farm physical address */
+  address: string;
+  /** Farm name */
+  name: string;
+  /** Average age of dogs on the farm */
+  averageDogsAge: string;
+  /** Average age of cats on the farm */
+  averageCatsAge: string;
+  /** Total number of cats on the farm */
+  sumOfCats: number;
+  /** Total number of dogs on the farm */
+  sumOfDogs: number;
+  /** Optional children elements */
+  children?: React.ReactNode;
 }
 
-const Farm = (props: FarmProps) => {
-    //const decoratedOnClick = useAccordionToggle(eventKey, onClick);
-    let btnClasses = [cssclass.btn, cssclass.drawing__border].join(' ');
-    return (
-        <Accordion  defaultActiveKey="0">
-            <Card>
-                <div key={props.id} className={[cssclass.card__farm].join(' ')}>
-                    <Accordion.Toggle as={Card.Header} eventKey="1">
-                        <FarmLogo className={cssclass.card__image__scaleA}/>
-                        <p className={cssclass.card__name}>{props.name}</p>
-                        <p className={cssclass.card__address}>{props.address}</p>
-                    </Accordion.Toggle>
-                    <Accordion.Collapse eventKey="1">
-                        <Card.Body>
-                        <div className={cssclass.card__address}>
-                            {props.averageDogsAge} Priemerny vek psov
-                        </div>
+/**
+ * Farm component displays a farm card with collapsible details
+ * Shows basic farm info and statistics about pets on the farm
+ */
+const Farm: React.FC<FarmProps> = ({
+  id,
+  name,
+  address,
+  averageDogsAge,
+  averageCatsAge,
+  sumOfCats,
+  sumOfDogs,
+  children,
+}) => {
+  const btnClasses = [cssclass.btn, cssclass.drawing__border].join(' ');
 
-                        <div className={cssclass.card__address}>
-                            {props.averageCatsAge} Priemerny vek maciek
-                        </div>
-                        <div className={cssclass.grid__container}>
-                            <div className="grid-child-followers">
-                                {props.sumOfCats} Pocet maciek
-                            </div>
-                            <div className="grid-child-followers">
-                                {props.sumOfDogs} Pocet psov
-                            </div>
+  return (
+    <Accordion className="mb-3">
+      <Card>
+        <div key={id} className={cssclass.card__farm}>
+          <Accordion.Button as={Card.Header} eventKey="0" className="d-flex align-items-center">
+            <FarmLogo className={cssclass.card__image__scaleA} />
+            <div className="ms-3">
+              <p className={cssclass.card__name}>{name}</p>
+              <p className={cssclass.card__address}>{address}</p>
+            </div>
+          </Accordion.Button>
 
-                        </div>
-                        </Card.Body>
-                    </Accordion.Collapse>
-                    <div className={cssclass.btn_container}>
+          <Accordion.Collapse eventKey="0">
+            <Card.Body>
+              <div className="mb-2">
+                <strong>Average dog age:</strong> {averageDogsAge}
+              </div>
 
-                        <Link to={{pathname: "/farm-pets/" + props.id}}>
-                            <button className={btnClasses}>All pets</button>
-                        </Link>
-                        <Link to={{
-                            pathname: "/edit-farm/" + props.id,
-                            state: {
-                                farmToEdit: {id: props.id, name: props.name, address: props.address}
-                            }
-                        }}>
-                            <button className={btnClasses}>Edit</button>
-                        </Link>
-                    </div>
+              <div className="mb-3">
+                <strong>Average cat age:</strong> {averageCatsAge}
+              </div>
+
+              <div className={cssclass.grid__container}>
+                <div className="grid-child-followers">
+                  <span className="badge bg-primary me-2">{sumOfCats}</span>
+                  Cats
                 </div>
-            </Card>
-        </Accordion>
-    );
+                <div className="grid-child-followers">
+                  <span className="badge bg-secondary me-2">{sumOfDogs}</span>
+                  Dogs
+                </div>
+              </div>
+
+              {children}
+            </Card.Body>
+          </Accordion.Collapse>
+
+          <div className={cssclass.btn_container}>
+            <Link to={`/farm-pets/${id}`}>
+              <button className={btnClasses}>All pets</button>
+            </Link>
+            <Link
+              to={`/edit-farm/${id}`}
+              state={{
+                farmToEdit: { id, name, address },
+              }}
+            >
+              <button className={btnClasses}>Edit</button>
+            </Link>
+          </div>
+        </div>
+      </Card>
+    </Accordion>
+  );
 };
 
 export default React.memo(Farm);

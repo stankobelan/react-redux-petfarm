@@ -1,32 +1,85 @@
-import {createSlice, PayloadAction} from '@reduxjs/toolkit';
-import {IContactInfo} from "../../share/interfaces/IContactInfo";
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-
-export interface ICommonSliceState {
-    contact : IContactInfo | null,
-    isFeatching : boolean,
-    isDone : boolean
+export interface NotificationMessage {
+  id: string;
+  type: 'success' | 'error' | 'info' | 'warning';
+  message: string;
+  autoHide?: boolean;
+  duration?: number;
 }
 
-const initialState: ICommonSliceState = {
-    contact: null,
-    isFeatching: false,
-    isDone: false
+export interface CommonState {
+  notifications: NotificationMessage[];
+  isMenuOpen: boolean;
+  globalLoading: boolean;
+  theme: 'light' | 'dark';
 }
 
+const initialState: CommonState = {
+  notifications: [],
+  isMenuOpen: false,
+  globalLoading: false,
+  theme: 'light',
+};
+
+/**
+ * Common Redux slice for application-wide state
+ */
 const commonSlice = createSlice({
-    name: 'CommonSlice',
-    initialState,
-    reducers: {
+  name: 'common',
+  initialState,
+  reducers: {
+    addNotification(state, action: PayloadAction<Omit<NotificationMessage, 'id'>>) {
+      const id = Date.now().toString();
+      state.notifications.push({
+        ...action.payload,
+        id,
+        autoHide: action.payload.autoHide ?? true,
+        duration: action.payload.duration ?? 5000,
+      });
+    },
 
-        sendingContactInfo(state, action:PayloadAction<ICommonSliceState>){
-            state = action.payload
-        }
+    removeNotification(state, action: PayloadAction<string>) {
+      state.notifications = state.notifications.filter(
+        notification => notification.id !== action.payload
+      );
+    },
 
+    clearAllNotifications(state) {
+      state.notifications = [];
+    },
 
-    }
+    setGlobalLoading(state, action: PayloadAction<boolean>) {
+      state.globalLoading = action.payload;
+    },
+
+    toggleMenu(state) {
+      state.isMenuOpen = !state.isMenuOpen;
+    },
+
+    setMenuOpen(state, action: PayloadAction<boolean>) {
+      state.isMenuOpen = action.payload;
+    },
+
+    toggleTheme(state) {
+      state.theme = state.theme === 'light' ? 'dark' : 'light';
+    },
+
+    setTheme(state, action: PayloadAction<'light' | 'dark'>) {
+      state.theme = action.payload;
+    },
+  },
 });
 
-export const {} = commonSlice.actions;
+export const {
+  addNotification,
+  removeNotification,
+  clearAllNotifications,
+  setGlobalLoading,
+  toggleMenu,
+  setMenuOpen,
+  toggleTheme,
+  setTheme,
+} = commonSlice.actions;
 
 export default commonSlice.reducer;
